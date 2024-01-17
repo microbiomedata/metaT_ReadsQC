@@ -1,4 +1,4 @@
 {
-    "ShortReadsQC.input_files": ["https://data.microbiomedata.org/data/nmdc:omprc-11-0011q207/nmdc:wfmsa-11-gb7n3r07.1/52644.2.406985.ATGGGTCT-CCCAGATA.fastq.gz"],
-    "ShortReadsQC.proj":"nmdc:xxxxxxx"
+    "metaTReadsQC.input_files": ["/expanse/projects/nmdc/edge_app/test/kli/nmdc-data/test_data/Metatranscriptomics/test_small_interleave.fastq.gz"],
+    "metaTReadsQC.proj":"nmdc:xxxxxxx"
 }

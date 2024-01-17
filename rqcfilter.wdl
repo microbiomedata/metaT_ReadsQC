@@ -1,7 +1,7 @@
-# Short reads QC workflow
+# metaT QC workflow
 version 1.0
 
-workflow ShortReadsQC {
+workflow metaTReadsQC {
     input{
         String  container="bfoster1/img-omics:0.1.9"
         String  bbtools_container="microbiomedata/bbtools:38.96"
@@ -34,7 +34,6 @@ workflow ShortReadsQC {
    call rqcfilter as qc {
         input:
             input_fastq = if length(input_files) > 1 then stage_interleave.reads_fastq else stage_single.reads_fastq,
-            threads = "16",
             database = database,
             gcloud_env = gcloud_env,
             memory = "60G",
@@ -134,7 +133,7 @@ task stage_interleave {
 }
 
 
-task rqcfilter {
+task rqcfilter{
     input{
         File? input_fastq
         String container
@@ -143,18 +142,13 @@ task rqcfilter {
         Boolean gcloud_env=false
         String gcloud_db_path = "/cromwell_root/workflows_refdata/refdata/RQCFilterData"
         Array[File]? gcloud_db= if (gcloud_env) then [database] else []
-        Boolean chastityfilter_flag=true
         String? memory
-        String? threads
         String filename_outlog="stdout.log"
         String filename_errlog="stderr.log"
         String filename_stat="filtered/filterStats.txt"
         String filename_stat2="filtered/filterStats2.txt"
         String filename_stat_json="filtered/filterStats.json"
         String filename_reproduce="filtered/reproduce.sh"
-        String system_cpu="$(grep \"model name\" /proc/cpuinfo | wc -l)"
-        String jvm_threads=select_first([threads,system_cpu])
-        String chastityfilter= if (chastityfilter_flag) then "cf=t" else "cf=f"
     }
 
     runtime {
@@ -167,21 +161,21 @@ task rqcfilter {
         export TIME="time result\ncmd:%C\nreal %es\nuser %Us \nsys  %Ss \nmemory:%MKB \ncpu %P"
         set -eo pipefail
         if ~{gcloud_env}; then
-		    dbdir=`ls -d /mnt/*/*/RQCFilterData`
+            dbdir=`ls -d /mnt/*/*/RQCFilterData`
             if [ ! -z $dbdir ]; then
                 ln -s $dbdir ~{gcloud_db_path}
             else
-            	echo "Cannot find gcloud refdb" 1>&2
+                echo "Cannot find gcloud refdb" 1>&2
             fi
-		fi
-		
+        fi
+        
         rqcfilter2.sh \
             jni=t \
             in=~{input_fastq} \
             path=filtered \
-            ~{if (defined(memory)) then "-Xmx" + memory else "-Xmx=101077m" }\
+            ~{if (defined(memory)) then "-Xmx" + memory else "-Xmx=101077m" } \
             barcodefilter=f \
-            clumpify=t \	
+            clumpify=t \
             khist=t \
             maq=10 \
             maxns=1 \
@@ -200,7 +194,7 @@ task rqcfilter {
             removeribo=t \
             rna=t \
             rqcfilterdata=~{if gcloud_env then gcloud_db_path else rqcfilterdata} \
-            sketch \	
+            sketch \
             trimfragadapter=t \
             trimpolyg=5 \
             trimq=0 \
