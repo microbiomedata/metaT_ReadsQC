@@ -1,4 +1,0 @@
-{
-    "metaTReadsQC.input_files": ["/expanse/projects/nmdc/edge_app/test/kli/nmdc-data/test_data/Metatranscriptomics/test_small_interleave.fastq.gz"],
-    "metaTReadsQC.proj":"nmdc:xxxxxxx"
-}
