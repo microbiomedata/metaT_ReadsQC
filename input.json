@@ -1,7 +1,4 @@
 {
-    "nmdc_rqcfilter.database": "/global/cfs/projectdirs/m3408/aim2/database",
     "nmdc_rqcfilter.input_files": "/global/cfs/cdirs/m3408/ficus/8434.3.102077.AGTTCC.fastq.gz",
-    "nmdc_rqcfilter.proj":"nmdc:xxxxxxx",
-    "nmdc_rqcfilter.resouce":"NERSC -- perlmutter",
-    "nmdc_rqcfilter.informed_by": "nmdc:xxxxxxxx"
+    "nmdc_rqcfilter.proj":"nmdc:xxxxxxx"
 }
