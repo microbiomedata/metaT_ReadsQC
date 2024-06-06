@@ -69,7 +69,7 @@ task stage_single {
     }
    command <<<
 
-    set -e
+    set -oeu pipefail
     if [ $( echo ~{input_file}|egrep -c "https*:") -gt 0 ] ; then
         wget ~{input_file} -O ~{target}
     else
@@ -105,7 +105,7 @@ task stage_interleave {
    }
 
    command <<<
-       set -e
+       set -oeu pipefail
        if [ $( echo ~{input_fastq1} | egrep -c "https*:") -gt 0 ] ; then
            wget ~{input_fastq1} -O ~{target_reads_1}
            wget ~{input_fastq2} -O ~{target_reads_2}
@@ -159,7 +159,7 @@ task rqcfilter{
 
      command<<<
         export TIME="time result\ncmd:%C\nreal %es\nuser %Us \nsys  %Ss \nmemory:%MKB \ncpu %P"
-        set -eo pipefail
+        set -eou pipefail
         if ~{gcloud_env}; then
             dbdir=`ls -d /mnt/*/*/RQCFilterData`
             if [ ! -z $dbdir ]; then
@@ -236,6 +236,7 @@ task make_info_file {
     }
 
     command<<<
+        set -oeu pipefail
         sed -n 2,5p ~{info_file} 2>&1 | \
           perl -ne 's:in=/.*/(.*) :in=$1:; s/#//; s/BBTools/BBTools(1)/; print;' > \
          ~{prefix}_readsQC.info
@@ -265,7 +266,7 @@ task finish_rqc {
 
     command<<<
 
-        set -e
+        set -oeu pipefail
         end=`date --iso-8601=seconds`
         # Generate QA objects
         ln ~{filtered} ~{prefix}_filtered.fastq.gz || ln -s ~{filtered} ~{prefix}_filtered.fastq.gz
