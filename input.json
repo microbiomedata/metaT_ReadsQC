@@ -1,4 +1,4 @@
 {
-    "nmdc_rqcfilter.input_files": "/global/cfs/cdirs/m3408/ficus/8434.3.102077.AGTTCC.fastq.gz",
-    "nmdc_rqcfilter.proj":"nmdc:xxxxxxx"
+    "metaTReadsQC.input_files": ["/global/cfs/cdirs/m3408/ficus/example/12889.1.295318.GTGCTTAC-GTAAGCAC.fastq.gz"],
+    "metaTReadsQC.proj":"nmdc:xxxxxxx"
 }

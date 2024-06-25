@@ -3,50 +3,54 @@ version 1.0
 
 workflow metaTReadsQC {
     input{
-        String  container="bfoster1/img-omics:0.1.9"
-        String  bbtools_container="microbiomedata/bbtools:38.96"
-        String  workflow_container = "microbiomedata/workflowmeta:1.1.1"
+        String  bbtools_container="microbiomedata/bbtools:39.03"
         String  proj
         String  prefix=sub(proj, ":", "_")
         Boolean gcloud_env=false
         Array[String] input_files
         String  database="/refdata/"
+        String  rqc_mem = "200G"
+        Int  rqc_thr = 64
+        String  interleave_mem = "10G"
+    }
+
+    if (length(input_files) == 1) {
+        call stage_single {
+        input:
+            container=bbtools_container,
+            input_file = input_files[0]
+        }
     }
 
     if (length(input_files) > 1) {
         call stage_interleave {
         input:
             container=bbtools_container,
-            memory="10G",
+            memory=interleave_mem,
             input_fastq1=input_files[0],
             input_fastq2=input_files[1]
         }
     }
-    if (length(input_files) == 1) {
-        call stage_single {
-        input:
-            container=container,
-            input_file = input_files[0]
-        }
-    }
+    
 
     # Estimate RQC runtime at an hour per compress GB
    call rqcfilter as qc {
         input:
-            input_fastq = if length(input_files) > 1 then stage_interleave.reads_fastq else stage_single.reads_fastq,
+            input_fastq = if length(input_files) == 1 then stage_single.reads_fastq else stage_interleave.reads_fastq,
             database = database,
             gcloud_env = gcloud_env,
-            memory = "60G",
+            memory = rqc_mem,
+            threads = rqc_thr,
             container = bbtools_container
     }
     call make_info_file {
         input: info_file = qc.info_file,
-            container = container,
+            container = bbtools_container,
             prefix = prefix
     }
 
     call finish_rqc {
-        input: container = workflow_container,
+        input: container = bbtools_container,
             prefix = prefix,
             filtered = qc.filtered,
             filtered_stats = qc.stat,
@@ -107,11 +111,12 @@ task stage_interleave {
    command <<<
        set -oeu pipefail
        if [ $( echo ~{input_fastq1} | egrep -c "https*:") -gt 0 ] ; then
-           wget ~{input_fastq1} -O ~{target_reads_1}
-           wget ~{input_fastq2} -O ~{target_reads_2}
+        wget ~{input_fastq1} -O ~{target_reads_1}
+        wget ~{input_fastq2} -O ~{target_reads_2}
        else
-           ln ~{input_fastq1} ~{target_reads_1} || ln -s ~{input_fastq1} ~{target_reads_1}
-           ln ~{input_fastq2} ~{target_reads_2} || ln -s ~{input_fastq2} ~{target_reads_2}
+        set +o pipefail
+        ln ~{input_fastq1} ~{target_reads_1} || ln -s ~{input_fastq1} ~{target_reads_1}
+        ln ~{input_fastq2} ~{target_reads_2} || ln -s ~{input_fastq2} ~{target_reads_2}
        fi
 
        reformat.sh -Xmx~{memory} in1=~{target_reads_1} in2=~{target_reads_2} out=~{output_interleaved}
@@ -125,7 +130,7 @@ task stage_interleave {
       String start = read_string("start.txt")
    }
    runtime {
-     memory: "1 GiB"
+     memory: "10 GiB"
      cpu:  2
      maxRetries: 1
      docker: container
@@ -143,18 +148,13 @@ task rqcfilter{
         String gcloud_db_path = "/cromwell_root/workflows_refdata/refdata/RQCFilterData"
         Array[File]? gcloud_db= if (gcloud_env) then [database] else []
         String? memory
+        Int? threads
         String filename_outlog="stdout.log"
         String filename_errlog="stderr.log"
         String filename_stat="filtered/filterStats.txt"
         String filename_stat2="filtered/filterStats2.txt"
         String filename_stat_json="filtered/filterStats.json"
         String filename_reproduce="filtered/reproduce.sh"
-    }
-
-    runtime {
-        docker: container
-        memory: "70 GB"
-        cpu:  16
     }
 
      command<<<
@@ -170,19 +170,20 @@ task rqcfilter{
         fi
         
         rqcfilter2.sh \
-            jni=t \
-            in=~{input_fastq} \
-            path=filtered \
-            ~{if (defined(memory)) then "-Xmx" + memory else "-Xmx=101077m" } \
             barcodefilter=f \
+            chastityfilter=f \
             clumpify=t \
+            in=~{input_fastq} \
+            jni=t \
             khist=t \
+            log=status.log \
             maq=10 \
             maxns=1 \
             minlen=51 \
             mlf=0.33 \
             mtst=t \
             outribo=ribo.fq.gz \
+            path=filtered \
             phix=t \
             pigz=t \
             qtrim=r \
@@ -194,12 +195,15 @@ task rqcfilter{
             removeribo=t \
             rna=t \
             rqcfilterdata=~{if gcloud_env then gcloud_db_path else rqcfilterdata} \
-            sketch \
+            sketch=t \
+            stats=~{filename_stat} \
             trimfragadapter=t \
             trimpolyg=5 \
             trimq=0 \
             unpigz=t \
             usejni=f \
+            ~{if (defined(memory)) then "-Xmx" + memory else "-Xmx101077m" } \
+            ~{if (defined(threads)) then "threads=" + threads else "threads=auto" } \
             > >(tee -a  ~{filename_outlog}) \
             2> >(tee -a ~{filename_errlog}  >&2)
 
@@ -226,6 +230,11 @@ task rqcfilter{
             File filtered = glob("filtered/*fastq.gz")[0]
             File json_out = filename_stat_json
      }
+     runtime {
+        docker: container
+        memory: "492 GiB"
+        cpu:  32
+    }
 }
 
 task make_info_file {
@@ -275,7 +284,7 @@ task finish_rqc {
 
        # Generate stats but rename some fields untilt the script is fixed.
        /scripts/rqcstats.py ~{filtered_stats} > stats.json
-       cp stats.json ~{prefix}_qa_stats.json
+       ln stats.json ~{prefix}_qa_stats.json || ln -s stats.json ~{prefix}_qa_stats.json
 
     >>>
     output {
