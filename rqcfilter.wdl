@@ -3,14 +3,15 @@ version 1.0
 
 workflow metaTReadsQC {
     input{
-        String  bbtools_container="microbiomedata/bbtools:39.03"
+        String  bbtools_container="microbiomedata/bbtools@sha256:df16e8343661effe8060478d14a9b4620cf484efba0d4818a467276d4bb07a6d"
+        String  workflow_container = "microbiomedata/workflowmeta:1.1.1"
         String  proj
         String  prefix=sub(proj, ":", "_")
         Boolean gcloud_env=false
         Array[String] input_files
         String  database="/refdata/"
         String  rqc_mem = "200G"
-        Int  rqc_thr = 64
+        Int     rqc_thr = 64
         String  interleave_mem = "10G"
     }
 
@@ -50,7 +51,7 @@ workflow metaTReadsQC {
     }
 
     call finish_rqc {
-        input: container = bbtools_container,
+        input: container = workflow_container,
             prefix = prefix,
             filtered = qc.filtered,
             filtered_stats = qc.stat,
@@ -232,7 +233,7 @@ task rqcfilter{
      }
      runtime {
         docker: container
-        memory: "492 GiB"
+        memory: "210 GiB"
         cpu:  32
     }
 }
