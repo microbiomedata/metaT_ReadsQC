@@ -171,12 +171,15 @@ task rqcfilter{
         fi
         
         rqcfilter2.sh \
+            in=~{input_fastq} \
+            rqcfilterdata=~{if gcloud_env then gcloud_db_path else rqcfilterdata} \
+            path=filtered \
             barcodefilter=f \
             chastityfilter=f \
             clumpify=t \
             extend=f \
-            in=~{input_fastq} \
             jni=t \
+            usejni=f \
             khist=t \
             log=status.log \
             maq=10 \
@@ -185,7 +188,6 @@ task rqcfilter{
             mlf=0.33 \
             mtst=t \
             outribo=ribo.fq.gz \
-            path=filtered \
             phix=t \
             pigz=t \
             qtrim=r \
@@ -196,16 +198,14 @@ task rqcfilter{
             removemouse=t \
             removeribo=t \
             rna=t \
-            rqcfilterdata=~{if gcloud_env then gcloud_db_path else rqcfilterdata} \
             sketch=t \
             stats=~{filename_stat} \
             trimfragadapter=t \
             trimpolyg=5 \
             trimq=0 \
             unpigz=t \
-            usejni=f \
-            ~{if (defined(memory)) then "-Xmx" + memory else "-Xmx101077m" } \
-            ~{if (defined(threads)) then "threads=" + threads else "threads=auto" } \
+            ~{if (defined(memory)) then "-Xmx" + memory + " " else "-Xmx101077m " } \
+            ~{if (defined(threads)) then "threads=" + threads + " " else "threads=auto " } \
             > >(tee -a  ~{filename_outlog}) \
             2> >(tee -a ~{filename_errlog}  >&2)
 
