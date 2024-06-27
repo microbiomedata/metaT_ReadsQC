@@ -174,6 +174,7 @@ task rqcfilter{
             barcodefilter=f \
             chastityfilter=f \
             clumpify=t \
+            extend=f \
             in=~{input_fastq} \
             jni=t \
             khist=t \
