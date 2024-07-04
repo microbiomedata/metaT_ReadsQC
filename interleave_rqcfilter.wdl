@@ -74,6 +74,9 @@ task stage {
        # Capture the start time
        date --iso-8601=seconds > start.txt
 
+       # Validate that the read1 and read2 files are sorted correct to interleave
+       reformat.sh -Xmx~{memory} verifypaired=t in=~{output_interleaved}
+
    >>>
 
    output{
