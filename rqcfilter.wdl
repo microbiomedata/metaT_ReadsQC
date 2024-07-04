@@ -10,7 +10,7 @@ workflow metaTReadsQC {
         Boolean gcloud_env=false
         Array[String] input_files
         String  database="/refdata/"
-        String  rqc_mem = "200G"
+        String  rqc_mem = "115G"
         Int     rqc_thr = 64
         String  interleave_mem = "10G"
     }
@@ -177,8 +177,9 @@ task rqcfilter{
             barcodefilter=f \
             chastityfilter=f \
             clumpify=t \
-            in=~{input_fastq} \
+            extend=f \
             jni=t \
+            usejni=f \
             khist=t \
             log=status.log \
             maq=10 \
@@ -205,11 +206,13 @@ task rqcfilter{
             trimpolyg=5 \
             trimq=0 \
             unpigz=t \
-            usejni=f \
             ~{if (defined(memory)) then "-Xmx" + memory else "-Xmx101077m" } \
             ~{if (defined(threads)) then "threads=" + threads else "threads=auto" } \
+            in=~{input_fastq} \
             > >(tee -a  ~{filename_outlog}) \
             2> >(tee -a ~{filename_errlog}  >&2)
+
+            # moved input file to end for processing of resubmit.sh line, the rest is kinda alphabetized 
 
         python <<CODE
         import json
@@ -236,7 +239,7 @@ task rqcfilter{
      }
      runtime {
         docker: container
-        memory: "210 GiB"
+        memory: "140 GiB"
         cpu:  32
     }
 }
@@ -251,10 +254,11 @@ task make_info_file {
     command<<<
         set -oeu pipefail
         sed -n 2,5p ~{info_file} 2>&1 | \
-          perl -ne 's:in=/.*/(.*) :in=$1:; s/#//; s/BBTools/BBTools(1)/; print;' > \
+          sed -e 's/^#//; s/in=[^ ]*/in=filename.fastq.gz/; s/#//g; s/BBTools/BBTools(1)/g;' > \
          ~{prefix}_readsQC.info
         echo -e "\n(1) B. Bushnell: BBTools software package, http://bbtools.jgi.doe.gov/" >> \
          ~{prefix}_readsQC.info
+         # perl -ne 's:in=/.*/(.*) :in=$1:; s/#//; s/BBTools/BBTools(1)/; print;' > \ # for container microbiomedata/workflowmeta:1.1.1
     >>>
 
     output {
