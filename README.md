@@ -31,19 +31,13 @@ Description of the files:
 
 ## Input files
 
-1. database path, 
-2. fastq (illumina paired-end interleaved fastq), 
+1. fastq (illumina paired-end interleaved fastq), 
 3. project name 
-4. resource where run the workflow
-5. informed_by 
 
 ```
 {
-    "nmdc_rqcfilter.database": "/global/cfs/projectdirs/m3408/aim2/database", 
-    "nmdc_rqcfilter.input_files": "/global/cfs/cdirs/m3408/ficus/8434.3.102077.AGTTCC.fastq.gz", 
-    "nmdc_rqcfilter.proj":"nmdc:xxxxxxx",
-    "nmdc_rqcfilter.resouce":"NERSC -- perlmutter",
-    "nmdc_rqcfilter.informed_by": "nmdc:xxxxxxxx"
+     "metaTReadsQC.input_files": ["/global/cfs/cdirs/m3408/ficus/example/12889.1.295318.GTGCTTAC-GTAAGCAC.fastq.gz"],
+    "metaTReadsQC.proj":"nmdc:xxxxxxx"
 }
 ```
 
@@ -51,16 +45,16 @@ Description of the files:
 
 The output will have one directory named by prefix of the fastq input file and a bunch of output files, including statistical numbers, status log and a shell script to reproduce the steps etc. 
 
-The main QC fastq output is named by prefix.anqdpht.fast.gz. 
+The main QC fastq output is named by prefix.fastq.gz. 
 
 ```
-|-- 8434.1.102069.ACAGTG.anqdpht.fastq.gz
-|-- filterStats.txt
-|-- filterStats.json
-|-- filterStats2.txt
-|-- adaptersDetected.fa
-|-- reproduce.sh
-|-- spikein.fq.gz
-|-- status.log
+|-- nmdc_xxxxxxx_filtered.fastq.gz 
+|-- nmdc_xxxxxxx_filterStats.txt
+|-- nmdc_xxxxxxx_filterStats2.txt
+|-- nmdc_xxxxxxx_qa_stats.json  
+|-- filtered/adaptersDetected.fa
+|-- filtered/reproduce.sh
+|-- filtered/spikein.fq.gz
+|-- filtered/status.log
 |-- ...
 ```
