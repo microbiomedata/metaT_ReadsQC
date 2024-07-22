@@ -8,7 +8,7 @@ workflow metaTReadsQC {
         String  proj
         String  prefix=sub(proj, ":", "_")
         Boolean gcloud_env=false
-        Array[File] input_files
+        Array[File?] input_files
         String  database="/refdata/"
         String  rqc_mem = "115G"
         Int     rqc_thr = 64
@@ -70,7 +70,7 @@ task stage_single {
     input{
         String container
         String target="raw.fastq.gz"
-        File input_file
+        File? input_file
     }
    command <<<
 
@@ -105,8 +105,8 @@ task stage_interleave {
     String target_reads_1="raw_reads_1.fastq.gz"
     String target_reads_2="raw_reads_2.fastq.gz"
     String output_interleaved="raw_interleaved.fastq.gz"
-    File input_fastq1
-    File input_fastq2
+    File? input_fastq1
+    File? input_fastq2
    }
 
    command <<<
