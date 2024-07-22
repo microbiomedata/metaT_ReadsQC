@@ -8,7 +8,7 @@ workflow metaTReadsQC {
         String  proj
         String  prefix=sub(proj, ":", "_")
         Boolean gcloud_env=false
-        Array[String] input_files
+        Array[File] input_files
         String  database="/refdata/"
         String  rqc_mem = "115G"
         Int     rqc_thr = 64
@@ -70,7 +70,7 @@ task stage_single {
     input{
         String container
         String target="raw.fastq.gz"
-        String input_file
+        File input_file
     }
    command <<<
 
@@ -105,8 +105,8 @@ task stage_interleave {
     String target_reads_1="raw_reads_1.fastq.gz"
     String target_reads_2="raw_reads_2.fastq.gz"
     String output_interleaved="raw_interleaved.fastq.gz"
-    String input_fastq1
-    String input_fastq2
+    File input_fastq1
+    File input_fastq2
    }
 
    command <<<
@@ -150,7 +150,6 @@ task rqcfilter{
         String rqcfilterdata = database + "/RQCFilterData"
         Boolean gcloud_env=false
         String gcloud_db_path = "/cromwell_root/workflows_refdata/refdata/RQCFilterData"
-        Array[File]? gcloud_db= if (gcloud_env) then [database] else []
         String? memory
         Int? threads
         String filename_outlog="stdout.log"
