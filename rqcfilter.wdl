@@ -55,13 +55,15 @@ workflow metaTReadsQC {
             prefix = prefix,
             filtered = qc.filtered,
             filtered_stats = qc.stat,
-            filtered_stats2 = qc.stat2
+            filtered_stats2 = qc.stat2,
+            filtered_ribo = qc.filtered_ribo
     }
     output {
         File filtered_final = finish_rqc.filtered_final
         File filtered_stats_final = finish_rqc.filtered_stats_final
         File filtered_stats2_final = finish_rqc.filtered_stats2_final
         File rqc_info = make_info_file.rqc_info
+        File filtered_ribo_final = finish_rqc.filtered_ribo_final
     }
 }
 
@@ -158,6 +160,7 @@ task rqcfilter{
         String filename_stat2="filtered/filterStats2.txt"
         String filename_stat_json="filtered/filterStats.json"
         String filename_reproduce="filtered/reproduce.sh"
+        String filename_ribo = "filtered/rRNA.fastq.gz"
     }
 
      command<<<
@@ -186,7 +189,7 @@ task rqcfilter{
             minlen=51 \
             mlf=0.33 \
             mtst=t \
-            outribo=ribo.fq.gz \
+            outribo=rRNA.fastq.gz \
             path=filtered \
             phix=t \
             pigz=t \
@@ -234,6 +237,7 @@ task rqcfilter{
             File stat2 = filename_stat2
             File info_file = filename_reproduce
             File filtered = glob("filtered/*fastq.gz")[0]
+            File filtered_ribo = filename_ribo
             File json_out = filename_stat_json
      }
      runtime {
@@ -276,6 +280,7 @@ task finish_rqc {
         File   filtered_stats
         File   filtered_stats2
         File   filtered
+        File   filtered_ribo
         String container
         String prefix
     }
@@ -288,6 +293,7 @@ task finish_rqc {
         ln ~{filtered} ~{prefix}_filtered.fastq.gz || ln -s ~{filtered} ~{prefix}_filtered.fastq.gz
         ln ~{filtered_stats} ~{prefix}_filterStats.txt || ln -s ~{filtered_stats} ~{prefix}_filterStats.txt
         ln ~{filtered_stats2} ~{prefix}_filterStats2.txt || ln -s ~{filtered_stats2} ~{prefix}_filterStats2.txt
+        ln ~{filtered_ribo} ~{prefix}_rRNA.fastq.gz || ln -s ~{filtered_ribo} ~{prefix}_rRNA.fastq.gz
 
        # Generate stats but rename some fields untilt the script is fixed.
        /scripts/rqcstats.py ~{filtered_stats} > stats.json
@@ -298,6 +304,7 @@ task finish_rqc {
         File filtered_final = "~{prefix}_filtered.fastq.gz"
         File filtered_stats_final = "~{prefix}_filterStats.txt"
         File filtered_stats2_final = "~{prefix}_filterStats2.txt"
+        File filtered_ribo_final = "~{prefix}_rRNA.fastq.gz"
     }
 
     runtime {
