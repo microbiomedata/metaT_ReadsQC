@@ -10,9 +10,9 @@ workflow metaTReadsQC {
         Boolean gcloud_env=false
         Array[File?] input_files
         String  database="/refdata/"
-        String  rqc_mem = "115G"
+        Int     rqc_mem = 120
         Int     rqc_thr = 64
-        String  interleave_mem = "10G"
+        Int  interleave_mem = 10
     }
 
     if (length(input_files) == 1) {
@@ -103,7 +103,7 @@ task stage_single {
 task stage_interleave {
    input{
     String container
-    String memory
+    Int memory
     String target_reads_1="raw_reads_1.fastq.gz"
     String target_reads_2="raw_reads_2.fastq.gz"
     String output_interleaved="raw_interleaved.fastq.gz"
@@ -122,12 +122,12 @@ task stage_interleave {
         ln ~{input_fastq2} ~{target_reads_2} || ln -s ~{input_fastq2} ~{target_reads_2}
        fi
 
-       reformat.sh -Xmx~{memory} in1=~{target_reads_1} in2=~{target_reads_2} out=~{output_interleaved}
+       reformat.sh -Xmx~{memory}G in1=~{target_reads_1} in2=~{target_reads_2} out=~{output_interleaved}
        # Capture the start time
        date --iso-8601=seconds > start.txt
 
        # Validate that the read1 and read2 files are sorted correct to interleave
-       reformat.sh -Xmx~{memory} verifypaired=t in=~{output_interleaved}
+       reformat.sh -Xmx~{memory}G verifypaired=t in=~{output_interleaved}
 
    >>>
 
@@ -136,7 +136,7 @@ task stage_interleave {
       String start = read_string("start.txt")
    }
    runtime {
-     memory: "10 GiB"
+     memory: "~{memory} GiB"
      cpu:  2
      maxRetries: 1
      docker: container
@@ -152,8 +152,8 @@ task rqcfilter{
         String rqcfilterdata = database + "/RQCFilterData"
         Boolean gcloud_env=false
         String gcloud_db_path = "/cromwell_root/workflows_refdata/refdata/RQCFilterData"
-        String? memory
-        Int? threads
+        Int memory = 140
+        Int threads = 64
         String filename_outlog="stdout.log"
         String filename_errlog="stderr.log"
         String filename_stat="filtered/filterStats.txt"
@@ -208,7 +208,7 @@ task rqcfilter{
             trimpolyg=5 \
             trimq=0 \
             unpigz=t \
-            ~{if (defined(memory)) then "-Xmx" + memory else "-Xmx101077m" } \
+            ~{if (defined(memory)) then "-Xmx" + memory + "G" else "-Xmx101077m" } \
             ~{if (defined(threads)) then "threads=" + threads else "threads=auto" } \
             in=~{input_fastq} \
             > >(tee -a  ~{filename_outlog}) \
@@ -242,8 +242,9 @@ task rqcfilter{
      }
      runtime {
         docker: container
-        memory: "140 GiB"
-        cpu:  32
+        memory: "~{memory} GiB"
+        maxRetries: 1
+        cpu:  threads
     }
 }
 
