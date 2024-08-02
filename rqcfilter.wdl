@@ -10,8 +10,7 @@ workflow metaTReadsQC {
         Boolean gcloud_env=false
         Array[File?] input_files
         String  database="/refdata/"
-        # String  rqc_mem = "210G"
-        Int     rqc_mem = 210
+        Int     rqc_mem = 120
         Int     rqc_thr = 64
         Int  interleave_mem = 10
     }
@@ -244,7 +243,7 @@ task rqcfilter{
      runtime {
         docker: container
         memory: "~{memory} GiB"
-        maxRetries: 2
+        maxRetries: 1
         cpu:  threads
     }
 }
