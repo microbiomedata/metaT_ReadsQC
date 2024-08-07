@@ -10,7 +10,7 @@ workflow metaTReadsQC {
         Boolean gcloud_env=false
         Array[File?] input_files
         String  database="/refdata/"
-        Int     rqc_mem = 120
+        Int     rqc_mem = 180
         Int     rqc_thr = 64
         Int  interleave_mem = 10
     }
@@ -152,8 +152,9 @@ task rqcfilter{
         String rqcfilterdata = database + "/RQCFilterData"
         Boolean gcloud_env=false
         String gcloud_db_path = "/cromwell_root/workflows_refdata/refdata/RQCFilterData"
-        Int memory = 140
-        Int threads = 64
+        Int memory
+        Int xmxmem = floor(memory * 0.85)
+        Int threads
         String filename_outlog="stdout.log"
         String filename_errlog="stderr.log"
         String filename_stat="filtered/filterStats.txt"
@@ -208,7 +209,7 @@ task rqcfilter{
             trimpolyg=5 \
             trimq=0 \
             unpigz=t \
-            ~{if (defined(memory)) then "-Xmx" + memory + "G" else "-Xmx101077m" } \
+            ~{if (defined(memory)) then "-Xmx" + xmxmem + "G" else "-Xmx101077m" } \
             ~{if (defined(threads)) then "threads=" + threads else "threads=auto" } \
             in=~{input_fastq} \
             > >(tee -a  ~{filename_outlog}) \
