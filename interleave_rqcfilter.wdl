@@ -190,7 +190,7 @@ task rqcfilter{
             File stat = filename_stat
             File stat2 = filename_stat2
             File info_file = filename_reproduce
-            File filtered = glob("filtered/*.anqrpht.fastq.gz")[0]
+            File filtered = "filtered/raw.anqrpht.fastq.gz"
             File json_out = filename_stat_json
      }
      runtime {
