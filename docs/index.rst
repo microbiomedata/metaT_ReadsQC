@@ -9,35 +9,43 @@ Reads QC Workflow (v1.0.2)
 Workflow Overview
 -----------------
 
-This workflow utilizes the program “rqcfilter2” from BBTools to perform quality control on raw Illumina reads. The workflow performs quality trimming, artifact removal, linker trimming, adapter trimming, and spike-in removal (using BBDuk), and performs human/cat/dog/mouse/microbe removal (using BBMap).
+This workflow utilizes the program "rqcfilter2" from BBTools to perform quality control on raw Illumina reads. The workflow performs quality trimming, artifact removal, linker trimming, adapter trimming, and spike-in removal (using BBDuk), and performs human/cat/dog/mouse/microbe removal (using BBMap).
 
-The following parameters are used for "rqcfilter2" in this workflow::
- - qtrim=r     :  Quality-trim from right ends before mapping.
- - trimq=0     :  Trim quality threshold.
- - maxns=3     :  Reads with more Ns than this will be discarded.
- - maq=3       :  Reads with average quality (before trimming) below this will be discarded.
- - minlen=51   :  Reads shorter than this after trimming will be discarded.  Pairs will be discarded only if both are shorter.
- - mlf=0.33    :  Reads shorter than this fraction of original length after trimming will be discarded.
- - phix=true   :  Remove reads containing phiX kmers.
- - khist=true  :  Generate a kmer-frequency histogram of the output data.
- - kapa=true   :  Remove and quantify kapa tag
- - trimpolyg=5 :  Trim reads that start or end with a G polymer at least this long
- - clumpify=true       :  Run clumpify; all deduplication flags require this.
- - removehuman=true    :  Remove human reads via mapping.
- - removedog=true      :  Remove dog reads via mapping.
- - removecat=true      :  Remove cat reads via mapping.
- - removemouse=true    :  Remove mouse reads via mapping.
- - barcodefilter=false :  Disable improper barcodes filter
- - chastityfilter=false:  Remove illumina reads failing chastity filter.
- - trimfragadapter=true:  Trim all known Illumina adapter sequences, including TruSeq and Nextera.
- - removemicrobes=true :  Remove common contaminant microbial reads via mapping, and place them in a separate file.
+The following parameters are used for "rqcfilter2" in this workflow:
+    - barcodefilter=false :  Disable improper barcodes filter
+    - chastityfilter=false:  Remove illumina reads failing chastity filter.
+    - clumpify=true       :  Run clumpify; all deduplication flags require this.
+    - extend=false        : Extend reads during merging to allow insert size estimation of non-overlapping reads.
+    - jni=true             : Enable C code for higher speed and identical results.
+    - usejni=false        : Do alignments in C code, which is faster, if an edit distance is allowed. This will require compiling the C code; details are in /jni/README.txt.
+    - khist=true  :  Generate a kmer-frequency histogram of the output data.
+    - maq=10       :  Reads with average quality (before trimming) below this will be discarded.
+    - maxns=1     :  Reads with more Ns than this will be discarded.
+    - minlen=51   :  Reads shorter than this after trimming will be discarded. Pairs will be discarded only if both are shorter.
+    - mlf=0.33    :  Reads shorter than this fraction of original length after trimming will be discarded.
+    - mtst=true    : Spike-in bbduk removal mtst parameter 
+    - phix=true   :  Remove reads containing phiX kmers.
+    - pigz=true    : Use pigz for compression
+    - qtrim=r     :  Quality-trim from right ends before mapping.
+    - removecat=true      :  Remove cat reads via mapping.
+    - removedog=true      :  Remove dog reads via mapping.
+    - removehuman=true    :  Remove human reads via mapping.
+    - removemicrobes=true :  Remove common contaminant microbial reads via mapping, and place them in a separate file.
+    - removemouse=true    :  Remove mouse reads via mapping.
+    - removeribo=true      : Remove ribosomal reads via kmer-matching, and place them in a separate file.
+    - **rna=true**         : Parameter for RNA-seq analysis. 
+    - sketch=true          : Run SendSketch on 2M read pairs.
+    - trimfragadapter=true:  Trim all known Illumina adapter sequences, including TruSeq and Nextera.
+    - trimq=0     :  Trim quality threshold.
+    - trimpolyg=5 :  Trim reads that start or end with a G polymer at least this long.
+    - unpigz=t     : Use pigz for decompression
 
  
 Workflow Availability
 ---------------------
 
 The workflow from GitHub uses all the listed docker images to run all third-party tools.
-The workflow is available in GitHub: https://github.com/microbiomedata/ReadsQC; the corresponding
+The workflow is available in GitHub: https://github.com/microbiomedata/metaT_ReadsQC; the corresponding
 Docker image is available in DockerHub: https://hub.docker.com/r/microbiomedata/bbtools.
 
 Requirements for Execution 
@@ -63,6 +71,7 @@ Third party software (This is included in the Docker image.)
 
 - `BBTools v38.96 <https://jgi.doe.gov/data-and-tools/bbtools/>`_ (License: `BSD-3-Clause-LBNL <https://bitbucket.org/berkeleylab/jgi-bbtools/src/master/license.txt>`_)
 
+
 Requisite database
 ~~~~~~~~~~~~~~~~~~
 
@@ -78,20 +87,8 @@ The following commands will download the database::
 Sample dataset(s)
 -----------------
 
-- small dataset: `Ecoli 10x <https://portal.nersc.gov/cfs/m3408/test_data/ReadsQC_small_test_data.tgz>`_ . You can find input/output in the downloaded tar gz file.
+- Bulk soil microbial communities from the East River watershed near Crested Butte, Colorado, United States - ER_122 (`SRR8552838 <https://www.ebi.ac.uk/biosamples/samples/SAMN10864150>`_)` with `metadata available in the NMDC Data Portal <https://data.microbiomedata.org/details/study/nmdc:sty-11-dcqce727>`_
 
-- large dataset: Zymobiomics mock-community DNA control (`SRR7877884 <https://www.ebi.ac.uk/ena/browser/view/SRR7877884>`_); the `original gzipped dataset <https://portal.nersc.gov/cfs/m3408/test_data/ReadsQC_large_test_data.tgz>`_ is ~5.7 GB.  You can find input/output in the downloaded tar gz file.
-
-
-.. note::
-
-    If the input data is paired-end data, it must be in interleaved format. The following command will interleave the files, using the above dataset as an example:
-    
-.. code-block:: bash    
-
-    paste <(zcat SRR7877884_1.fastq.gz | paste - - - -) <(zcat SRR7877884_2.fastq.gz | paste - - - -) | tr '\t' '\n' | gzip -c > SRR7877884-int.fastq.gz
-    
-For testing purposes and for the following examples, we used a 10% sub-sampling of the above dataset: `SRR7877884-int-0.1.fastq.gz <https://portal.nersc.gov/cfs/m3408/test_data/SRR7877884-int-0.1.fastq.gz>`_. This dataset is already interleaved.
 
 Inputs
 ------
@@ -113,18 +110,13 @@ An example input JSON file is shown below:
 .. code-block:: JSON
 
     {
-        "jgi_rqcfilter.database": "/path/to/refdata",
-        "jgi_rqcfilter.input_files": [
-            "/path/to/SRR7877884-int-0.1.fastq.gz "
-        ],
-        "jgi_rqcfilter.input_interleaved": true,
-        "jgi_rqcfilter.input_fq1":[],
-        "jgi_rqcfilter.input_fq2":[],
-        "jgi_rqcfilter.outdir": "/path/to/rqcfiltered",
-        "jgi_rqcfilter.memory": "35G",
-        "jgi_rqcfilter.threads": "16"
-    }
+        "metaTReadsQC.input_files": ["/global/cfs/cdirs/m3408/test_data/metatranscriptome/antisense/52400.2.318150.GATACTGG-CCAGTATC.fastq.gz"],
+        "metaTReadsQC.proj":"nmdc:xxxxxxx",
+        "metaTReadsQC.rqc_mem": 180,
+        "metaTReadsQC.rqc_thr": 64,
+        "metaTReadsQC.database": "/refdata/"
 
+    }
 .. note::
 
     In an HPC environment, parallel processing allows for processing multiple samples. The "jgi_rqcfilter.input_files" parameter is an array data structure. It can be used for multiple samples as input separated by a comma (,).
@@ -162,7 +154,7 @@ Below is an example of all the output directory files with descriptions to the r
 ==================================== ============================================================================
 FileName                              Description
 ==================================== ============================================================================
-SRR7877884-int-0.1.anqdpht.fastq.gz   main output (clean data)       
+nmdc_xxxxxx.fastq.gz                  main output (clean data)       
 adaptersDetected.fa                   adapters detected and removed        
 bhist.txt                             base composition histogram by position 
 cardinality.txt                       estimation of the number of unique kmers 
