@@ -149,7 +149,8 @@ Below is an example of all the `filtered` output directory files from `rqcfilter
 ==================================== ============================================================================
 FileName                              Description
 ==================================== ============================================================================
-**raw.anqrpht.fastq.gz                main output (clean data)**     
+**raw.anqrpht.fastq.gz                main output (clean data)     
+rRNA.fastq.gz                         filtered ribosomal reads**
 adaptersDetected.fa                   adapters detected and removed        
 bhist.txt                             base composition histogram by position 
 cardinality.txt                       estimation of the number of unique kmers 
