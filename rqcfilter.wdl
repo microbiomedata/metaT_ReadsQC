@@ -3,16 +3,17 @@ version 1.0
 
 workflow metaTReadsQC {
     input{
-        String  bbtools_container="microbiomedata/bbtools@sha256:df16e8343661effe8060478d14a9b4620cf484efba0d4818a467276d4bb07a6d"
-        String  workflow_container = "microbiomedata/workflowmeta:1.1.1"
-        String  proj
-        String  prefix=sub(proj, ":", "_")
-        Boolean gcloud_env=false
         Array[File?] input_files
         String  database="/refdata/"
+        String  proj
         Int     rqc_mem = 180
         Int     rqc_thr = 64
-        Int  interleave_mem = 10
+        Int     interleave_mem = 10
+        Boolean gcloud_env=false
+        String  prefix=sub(proj, ":", "_")
+        String  bbtools_container="microbiomedata/bbtools@sha256:df16e8343661effe8060478d14a9b4620cf484efba0d4818a467276d4bb07a6d"
+        String  workflow_container = "microbiomedata/workflowmeta:1.1.1"
+
     }
 
     if (length(input_files) == 1) {

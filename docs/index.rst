@@ -1,7 +1,7 @@
-Reads QC Workflow (v1.0.2)
+MetaT Reads QC Workflow (v0.0.7)
 =============================
 
-.. image:: rqc_workflow.png
+.. image:: mt_rqc_workflow2024.png
    :align: center
    :scale: 50%
 
@@ -17,7 +17,7 @@ The following parameters are used for "rqcfilter2" in this workflow:
     - clumpify=true       :  Run clumpify; all deduplication flags require this.
     - extend=false        : Extend reads during merging to allow insert size estimation of non-overlapping reads.
     - jni=true             : Enable C code for higher speed and identical results.
-    - usejni=false        : Do alignments in C code, which is faster, if an edit distance is allowed. This will require compiling the C code; details are in /jni/README.txt.
+    - usejni=false        : Do alignments in C code, which is faster, if an edit distance is allowed. This will require compiling the C code.
     - khist=true  :  Generate a kmer-frequency histogram of the output data.
     - maq=10       :  Reads with average quality (before trimming) below this will be discarded.
     - maxns=1     :  Reads with more Ns than this will be discarded.
@@ -46,7 +46,7 @@ Workflow Availability
 
 The workflow from GitHub uses all the listed docker images to run all third-party tools.
 The workflow is available in GitHub: https://github.com/microbiomedata/metaT_ReadsQC; the corresponding
-Docker image is available in DockerHub: https://hub.docker.com/r/microbiomedata/bbtools.
+Docker images are available in DockerHub: https://hub.docker.com/r/microbiomedata/bbtools, https://hub.docker.com/r/microbiomedata/workflowmeta.
 
 Requirements for Execution 
 --------------------------
@@ -87,7 +87,8 @@ The following commands will download the database::
 Sample dataset(s)
 -----------------
 
-- Bulk soil microbial communities from the East River watershed near Crested Butte, Colorado, United States - ER_122 (`SRR8552838 <https://www.ebi.ac.uk/biosamples/samples/SAMN10864150>`_)` with `metadata available in the NMDC Data Portal <https://data.microbiomedata.org/details/study/nmdc:sty-11-dcqce727>`_
+- Metatranscriptome of soil microbial communities from the East River watershed near Crested Butte, Colorado, United States - ER_RNA_119 (`SRR11678315 <https://www.ncbi.nlm.nih.gov/sra/SRX8239222>`_) with `metadata available in the NMDC Data Portal <https://data.microbiomedata.org/details/study/nmdc:sty-11-dcqce727>`_. The zipped fastq file is available `here <https://portal.nersc.gov/project/m3408//test_data/metaT/SRR11678315.fastq.gz>`_
+
 
 
 Inputs
@@ -95,14 +96,12 @@ Inputs
 
 A JSON file containing the following information: 
 
-1.	the path to the database
-2.	the path to the interleaved fastq file (input data) 
-3.	the path to the output directory
-4.      input_interleaved (boolean)
-5.      forwards reads fastq file (when input_interleaved is false) 
-6.      reverse reads fastq file (when input_interleaved is false)     
-7.	(optional) parameters for memory 
-8.	(optional) number of threads requested
+1.	the path to the database directory
+2.	the path to the fastq file(s) ([R1, R2] if not interleaved) 
+3.  input_interleaved (boolean)
+4.  output file prefix
+5.	(optional) parameters for memory 
+6.	(optional) number of threads requested
 
 
 An example input JSON file is shown below:
@@ -110,59 +109,55 @@ An example input JSON file is shown below:
 .. code-block:: JSON
 
     {
-        "metaTReadsQC.input_files": ["/global/cfs/cdirs/m3408/test_data/metatranscriptome/antisense/52400.2.318150.GATACTGG-CCAGTATC.fastq.gz"],
-        "metaTReadsQC.proj":"nmdc:xxxxxxx",
+        "metaTReadsQC.input_files": ["https://portal.nersc.gov/project/m3408//test_data/metaT/SRR11678315.fastq.gz"],
+        "metaTReadsQC.proj":"SRR11678315-int-0.1",
         "metaTReadsQC.rqc_mem": 180,
         "metaTReadsQC.rqc_thr": 64,
         "metaTReadsQC.database": "/refdata/"
 
     }
-.. note::
-
-    In an HPC environment, parallel processing allows for processing multiple samples. The "jgi_rqcfilter.input_files" parameter is an array data structure. It can be used for multiple samples as input separated by a comma (,).
-    Ex: "jgi_rqcfilter.input_files":[“first-int.fastq”,”second-int.fastq”]
 
 
 Output
 ------
 
-A directory named with the prefix of the FASTQ input file will be created and multiple output files are generated; the main QC FASTQ output is named prefix.anqdpht.fastq.gz. Using the dataset above as an example, the main output would be named SRR7877884-int-0.1.anqdpht.fastq.gz. Other files include statistics on the quality of the data; what was trimmed, detected, and filtered in the data; a status log, and a shell script documenting the steps implemented so the workflow can be reproduced.
+In the workflow execution directories, there will be a folder called `filtered` containing all the below listed output files. The bolded outputs below will be copied over to the primary output folder for the full workflow, these are what are shown through the NMDC-EDGE website. The `rqcfilter2.sh` output is named `raw.anqdpht.fastq.gz`. Using the dataset above as an example, the main output would be renamed `SRR11678315-int-0.1.filtered.fastq.gz`. Other files include statistics on the quality of the data; what was trimmed, detected, and filtered in the data; a status log, and a shell script documenting the steps implemented so the workflow can be reproduced.
 
 An example output JSON file (filterStats.json) is shown below:
    
 .. code-block:: JSON 
     
-	{
-	  "inputReads": 331126,
-	  "kfilteredBases": 138732,
-	  "qfilteredReads": 0,
-	  "ktrimmedReads": 478,
-	  "outputBases": 1680724,
-	  "ktrimmedBases": 25248,
-	  "kfilteredReads": 926,
-	  "qtrimmedBases": 0,
-	  "outputReads": 11212,
-	  "gcPolymerRatio": 0.182857,
-	  "inputBases": 50000026,
-	  "qtrimmedReads": 0,
-	  "qfilteredBases": 0
-	}
+    {
+      "inputReads": 331126,
+      "kfilteredBases": 138732,
+      "qfilteredReads": 0,
+      "ktrimmedReads": 478,
+      "outputBases": 1680724,
+      "ktrimmedBases": 25248,
+      "kfilteredReads": 926,
+      "qtrimmedBases": 0,
+      "outputReads": 11212,
+      "gcPolymerRatio": 0.182857,
+      "inputBases": 50000026,
+      "qtrimmedReads": 0,
+      "qfilteredBases": 0
+    }
 
 
-Below is an example of all the output directory files with descriptions to the right.
+Below is an example of all the `filtered` output directory files from `rqcfilter2.sh` with descriptions to the right. The **bolded** files are selected for output through NMDC-EDGE. 
 
 ==================================== ============================================================================
 FileName                              Description
 ==================================== ============================================================================
-nmdc_xxxxxx.fastq.gz                  main output (clean data)       
+**raw.anqrpht.fastq.gz                main output (clean data)**     
 adaptersDetected.fa                   adapters detected and removed        
 bhist.txt                             base composition histogram by position 
 cardinality.txt                       estimation of the number of unique kmers 
 commonMicrobes.txt                    detected common microbes 
 file-list.txt                         output file list for rqcfilter2.sh 
-filterStats.txt                       summary statistics 
+**filterStats.txt                     summary statistics
 filterStats.json                      summary statistics in JSON format 
-filterStats2.txt                      more detailed summary statistics 
+filterStats2.txt                      more detailed summary statistics**
 gchist.txt                            GC content histogram 
 human.fq.gz                           detected human sequence reads 
 ihist_merge.txt                       insert size histogram 
@@ -191,7 +186,7 @@ synth2.fq.gz                          detected synthetic molecule (short contami
 Version History
 ---------------
 
-- 1.0.2 (release date **04/09/2021**; previous versions: 1.0.1)
+- 0.0.7 (release date **08/23/2024**; previous versions: 0.0.6)
 
 
 Point of contact
@@ -199,5 +194,4 @@ Point of contact
 
 - Original author: Brian Bushnell <bbushnell@lbl.gov>
 
-- Package maintainer: Chienchi Lo <chienchi@lanl.gov>
-
+- Package maintainers: Chienchi Lo <chienchi@lanl.gov>
