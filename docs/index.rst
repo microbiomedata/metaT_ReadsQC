@@ -9,7 +9,7 @@ MetaT Reads QC Workflow (v0.0.7)
 Workflow Overview
 -----------------
 
-This workflow utilizes the program "rqcfilter2" from BBTools to perform quality control on raw Illumina reads. The workflow performs quality trimming, artifact removal, linker trimming, adapter trimming, and spike-in removal (using BBDuk), and performs human/cat/dog/mouse/microbe removal (using BBMap).
+This workflow utilizes the program "rqcfilter2" from BBTools to perform quality control on raw Illumina reads. The workflow performs quality trimming, artifact removal, linker trimming, adapter trimming, and spike-in removal (using BBDuk), and performs human/cat/dog/mouse/microbe removal (using BBMap). It is a replicate of the `QA protocol <https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/data-preprocessing/>`_ implemented at JGI.
 
 The following parameters are used for "rqcfilter2" in this workflow:
     - barcodefilter=false :  Disable improper barcodes filter
@@ -77,8 +77,9 @@ Requisite database
 
 The RQCFilterData Database must be downloaded and installed. This is a 106 GB tar file which includes reference datasets of artifacts, adapters, contaminants, the phiX genome, and some host genomes.  
 
-The following commands will download the database:: 
+The following commands will download the database 
 
+.. code-block::bash
     mkdir refdata
     wget http://portal.nersc.gov/dna/microbial/assembly/bushnell/RQCFilterData.tar
     tar -xvf RQCFilterData.tar -C refdata
@@ -87,7 +88,7 @@ The following commands will download the database::
 Sample dataset(s)
 -----------------
 
-- Metatranscriptome of soil microbial communities from the East River watershed near Crested Butte, Colorado, United States - ER_RNA_119 (`SRR11678315 <https://www.ncbi.nlm.nih.gov/sra/SRX8239222>`_) with `metadata available in the NMDC Data Portal <https://data.microbiomedata.org/details/study/nmdc:sty-11-dcqce727>`_. The zipped fastq file is available `here <https://portal.nersc.gov/project/m3408//test_data/metaT/SRR11678315.fastq.gz>`_
+- Metatranscriptome of soil microbial communities from the East River watershed near Crested Butte, Colorado, United States - ER_RNA_119 (`SRR11678315 <https://www.ncbi.nlm.nih.gov/sra/SRX8239222>`_) with `metadata available in the NMDC Data Portal <https://data.microbiomedata.org/details/study/nmdc:sty-11-dcqce727>`_. The zipped fastq file is available `here <https://portal.nersc.gov/project/m3408//test_data/metaT/SRR11678315.fastq.gz>`_, and the sample outputs are available `here <https://portal.nersc.gov/cfs/m3408/test_data/metaT/SRR11678315/readsqc_output/>`_.
 
 
 
@@ -128,19 +129,19 @@ An example output JSON file (filterStats.json) is shown below:
 .. code-block:: JSON 
     
     {
-      "inputReads": 331126,
-      "kfilteredBases": 138732,
-      "qfilteredReads": 0,
-      "ktrimmedReads": 478,
-      "outputBases": 1680724,
-      "ktrimmedBases": 25248,
-      "kfilteredReads": 926,
-      "qtrimmedBases": 0,
-      "outputReads": 11212,
-      "gcPolymerRatio": 0.182857,
-      "inputBases": 50000026,
-      "qtrimmedReads": 0,
-      "qfilteredBases": 0
+        "inputReads": 16809276, 
+        "kfilteredBases": 4500, 
+        "qfilteredReads": 3978, 
+        "ktrimmedReads": 467761, 
+        "outputBases": 1473400259, 
+        "ktrimmedBases": 60463632, 
+        "kfilteredReads": 15, 
+        "qtrimmedBases": 2345, 
+        "outputReads": 4974016, 
+        "gcPolymerRatio": 112.898477, 
+        "inputBases": 5076401352, 
+        "qtrimmedReads": 292, 
+        "qfilteredBases": 1185765
     }
 
 
