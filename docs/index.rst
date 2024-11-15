@@ -16,61 +16,59 @@ The following parameters are used for "rqcfilter2" in this workflow:
 .. list-table:: 
    :header-rows: 1
 
-   * - Parameter
-     - Description
-   * - barcodefilter=false
+   * - :code:`barcodefilter=false`
      - Disable improper barcodes filter
-   * - chastityfilter=false
+   * - :code:`chastityfilter=false`
      - Remove illumina reads failing chastity filter
-   * - clumpify=true
+   * - :code:`clumpify=true`
      - Run clumpify; all deduplication flags require this
-   * - extend=false
+   * - :code:`extend=false`
      - Extend reads during merging to allow insert size estimation of non-overlapping reads
-   * - jni=true
+   * - :code:`jni=true`
      - Enable C code for higher speed and identical results
-   * - usejni=false
+   * - :code:`usejni=false`
      - Do alignments in C code, which is faster, if an edit distance is allowed. This will require compiling the C code
-   * - khist=true
+   * - :code:`khist=true`
      - Generate a kmer-frequency histogram of the output data
-   * - maq=10
+   * - :code:`maq=10`
      - Reads with average quality (before trimming) below this will be discarded
-   * - maxns=1
+   * - :code:`maxns=1`
      - Reads with more Ns than this will be discarded
-   * - minlen=51
+   * - :code:`minlen=51`
      - Reads shorter than this after trimming will be discarded. Pairs will be discarded only if both are shorter
-   * - mlf=0.33
+   * - :code:`mlf=0.33`
      - Reads shorter than this fraction of original length after trimming will be discarded
-   * - mtst=true
+   * - :code:`mtst=true`
      - Spike-in bbduk removal mtst parameter
-   * - phix=true
+   * - :code:`phix=true`
      - Remove reads containing phiX kmers
-   * - pigz=true
+   * - :code:`pigz=true`
      - Use pigz for compression
-   * - qtrim=r
+   * - :code:`qtrim=r`
      - Quality-trim from right ends before mapping
-   * - removecat=true
+   * - :code:`removecat=true`
      - Remove cat reads via mapping
-   * - removedog=true
+   * - :code:`removedog=true`
      - Remove dog reads via mapping
-   * - removehuman=true
+   * - :code:`removehuman=true`
      - Remove human reads via mapping
-   * - removemicrobes=true
+   * - :code:`removemicrobes=true`
      - Remove common contaminant microbial reads via mapping, and place them in a separate file
-   * - removemouse=true
+   * - :code:`removemouse=true`
      - Remove mouse reads via mapping
-   * - removeribo=true
+   * - :code:`removeribo=true`
      - Remove ribosomal reads via kmer-matching, and place them in a separate file
-   * - *rna=true*
+   * - :code:`*rna=true*`
      - Parameter for RNA-seq analysis
-   * - sketch=true
+   * - :code:`sketch=true`
      - Run SendSketch on 2M read pairs
-   * - trimfragadapter=true
+   * - :code:`trimfragadapter=true`
      - Trim all known Illumina adapter sequences, including TruSeq and Nextera
-   * - trimq=0
+   * - :code:`trimq=0`
      - Trim quality threshold
-   * - trimpolyg=5
+   * - :code:`trimpolyg=5`
      - Trim reads that start or end with a G polymer at least this long
-   * - unpigz=t
+   * - :code:`unpigz=t`
      - Use pigz for decompression
 
  
@@ -177,7 +175,7 @@ An example output JSON file (filterStats.json) is shown below:
     }
 
 
-Below is an example of all the `filtered` output directory files from `rqcfilter2.sh` with descriptions to the right. The *italicized* files are selected for output through NMDC-EDGE. 
+Below is an example of all the :code:`filtered` output directory files from :code:`rqcfilter2.sh` with descriptions to the right. The *italicized* files are selected for output through NMDC-EDGE. 
 
 .. list-table:: 
    :header-rows: 1
