@@ -16,61 +16,61 @@ The following parameters are used for "rqcfilter2" in this workflow:
 .. list-table:: 
    :header-rows: 1
 
-   * - `Parameter`
+   * - Parameter
      - Description
-   * - `barcodefilter=false`
+   * - barcodefilter=false
      - Disable improper barcodes filter
-   * - `chastityfilter=false`
+   * - chastityfilter=false
      - Remove illumina reads failing chastity filter
-   * - `clumpify=true`
+   * - clumpify=true
      - Run clumpify; all deduplication flags require this
-   * - `extend=false`
+   * - extend=false
      - Extend reads during merging to allow insert size estimation of non-overlapping reads
-   * - `jni=true`
+   * - jni=true
      - Enable C code for higher speed and identical results
-   * - `usejni=false`
+   * - usejni=false
      - Do alignments in C code, which is faster, if an edit distance is allowed. This will require compiling the C code
-   * - `khist=true`
+   * - khist=true
      - Generate a kmer-frequency histogram of the output data
-   * - `maq=10`
+   * - maq=10
      - Reads with average quality (before trimming) below this will be discarded
-   * - `maxns=1`
+   * - maxns=1
      - Reads with more Ns than this will be discarded
-   * - `minlen=51`
+   * - minlen=51
      - Reads shorter than this after trimming will be discarded. Pairs will be discarded only if both are shorter
-   * - `mlf=0.33`
+   * - mlf=0.33
      - Reads shorter than this fraction of original length after trimming will be discarded
-   * - `mtst=true`
+   * - mtst=true
      - Spike-in bbduk removal mtst parameter
-   * - `phix=true`
+   * - phix=true
      - Remove reads containing phiX kmers
-   * - `pigz=true`
+   * - pigz=true
      - Use pigz for compression
-   * - `qtrim=r`
+   * - qtrim=r
      - Quality-trim from right ends before mapping
-   * - `removecat=true`
+   * - removecat=true
      - Remove cat reads via mapping
-   * - `removedog=true`
+   * - removedog=true
      - Remove dog reads via mapping
-   * - `removehuman=true`
+   * - removehuman=true
      - Remove human reads via mapping
-   * - `removemicrobes=true`
+   * - removemicrobes=true
      - Remove common contaminant microbial reads via mapping, and place them in a separate file
-   * - `removemouse=true`
+   * - removemouse=true
      - Remove mouse reads via mapping
-   * - `removeribo=true`
+   * - removeribo=true
      - Remove ribosomal reads via kmer-matching, and place them in a separate file
-   * - `*rna=true*`
+   * - *rna=true*
      - Parameter for RNA-seq analysis
-   * - `sketch=true`
+   * - sketch=true
      - Run SendSketch on 2M read pairs
-   * - `trimfragadapter=true`
+   * - trimfragadapter=true
      - Trim all known Illumina adapter sequences, including TruSeq and Nextera
-   * - `trimq=0`
+   * - trimq=0
      - Trim quality threshold
-   * - `trimpolyg=5`
+   * - trimpolyg=5
      - Trim reads that start or end with a G polymer at least this long
-   * - `unpigz=t`
+   * - unpigz=t
      - Use pigz for decompression
 
  
@@ -154,7 +154,7 @@ An example input JSON file is shown below:
 Output
 ------
 
-In the workflow execution directories, there will be a folder called `filtered` containing all the below listed output files. The bolded outputs below will be copied over to the primary output folder for the full workflow, these are what are shown through the NMDC-EDGE website. The `rqcfilter2.sh` output is named `raw.anqdpht.fastq.gz`. Using the dataset above as an example, the main output would be renamed `SRR11678315-int-0.1.filtered.fastq.gz`. Other files include statistics on the quality of the data; what was trimmed, detected, and filtered in the data; a status log, and a shell script documenting the steps implemented so the workflow can be reproduced.
+In the workflow execution directories, there will be a folder called :code:`filtered` containing all the below listed output files. The bolded outputs below will be copied over to the primary output folder for the full workflow, these are what are shown through the NMDC-EDGE website. The :code:`rqcfilter2.sh` output is named :code:`raw.anqdpht.fastq.gz`. Using the dataset above as an example, the main output would be renamed :code:`SRR11678315-int-0.1.filtered.fastq.gz`. Other files include statistics on the quality of the data; what was trimmed, detected, and filtered in the data; a status log, and a shell script documenting the steps implemented so the workflow can be reproduced.
 
 An example output JSON file (filterStats.json) is shown below:
    
