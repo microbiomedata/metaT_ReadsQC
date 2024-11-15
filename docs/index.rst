@@ -33,7 +33,7 @@ The following parameters are used for "rqcfilter2" in this workflow:
     - removemicrobes=true :  Remove common contaminant microbial reads via mapping, and place them in a separate file.
     - removemouse=true    :  Remove mouse reads via mapping.
     - removeribo=true      : Remove ribosomal reads via kmer-matching, and place them in a separate file.
-    - **rna=true**         : Parameter for RNA-seq analysis. 
+    - *rna=true*         : Parameter for RNA-seq analysis. 
     - sketch=true          : Run SendSketch on 2M read pairs.
     - trimfragadapter=true:  Trim all known Illumina adapter sequences, including TruSeq and Nextera.
     - trimq=0     :  Trim quality threshold.
@@ -51,10 +51,10 @@ Docker images are available in DockerHub: https://hub.docker.com/r/microbiomedat
 Requirements for Execution 
 --------------------------
 
-(recommendations are in **bold**) 
+(recommendations are in *italics*) 
 
-- WDL-capable Workflow Execution Tool (**Cromwell**)
-- Container Runtime that can load Docker images (**Docker v2.1.0.3 or higher**) 
+- WDL-capable Workflow Execution Tool (*Cromwell*)
+- Container Runtime that can load Docker images (*Docker v2.1.0.3 or higher*) 
 
 Hardware Requirements
 ---------------------
@@ -144,50 +144,83 @@ An example output JSON file (filterStats.json) is shown below:
     }
 
 
-Below is an example of all the `filtered` output directory files from `rqcfilter2.sh` with descriptions to the right. The **bolded** files are selected for output through NMDC-EDGE. 
+Below is an example of all the `filtered` output directory files from `rqcfilter2.sh` with descriptions to the right. The *italicized* files are selected for output through NMDC-EDGE. 
 
-==================================== ============================================================================
-FileName                              Description
-==================================== ============================================================================
-**raw.anqrpht.fastq.gz                main output (clean data)     
-rRNA.fastq.gz                         filtered ribosomal reads**
-adaptersDetected.fa                   adapters detected and removed        
-bhist.txt                             base composition histogram by position 
-cardinality.txt                       estimation of the number of unique kmers 
-commonMicrobes.txt                    detected common microbes 
-file-list.txt                         output file list for rqcfilter2.sh 
-**filterStats.txt                     summary statistics
-filterStats.json                      summary statistics in JSON format 
-filterStats2.txt                      more detailed summary statistics**
-gchist.txt                            GC content histogram 
-human.fq.gz                           detected human sequence reads 
-ihist_merge.txt                       insert size histogram 
-khist.txt                             kmer-frequency histogram 
-kmerStats1.txt                        synthetic molecule (phix, linker, lamda, pJET) filter run log  
-kmerStats2.txt                        synthetic molecule (short contamination) filter run log 
-ktrim_kmerStats1.txt                  detected adapters filter run log 
-ktrim_scaffoldStats1.txt              detected adapters filter statistics 
-microbes.fq.gz                        detected common microbes sequence reads 
-microbesUsed.txt                      common microbes list for detection 
-peaks.txt                             number of unique kmers in each peak on the histogram 
-phist.txt                             polymer length histogram 
-refStats.txt                          human reads filter statistics 
-reproduce.sh                          the shell script to reproduce the run
-scaffoldStats1.txt                    detected synthetic molecule (phix, linker, lamda, pJET) statistics 
-scaffoldStats2.txt                    detected synthetic molecule (short contamination) statistics 
-scaffoldStatsSpikein.txt              detected skipe-in kapa tag statistics 
-sketch.txt                            mash type sketch scanned result against nt, refseq, silva database sketches.  
-spikein.fq.gz                         detected skipe-in kapa tag sequence reads 
-status.log                            rqcfilter2.sh running log 
-synth1.fq.gz                          detected synthetic molecule (phix, linker, lamda, pJET) sequence reads 
-synth2.fq.gz                          detected synthetic molecule (short contamination) sequence reads 
-==================================== ============================================================================
+.. list-table:: 
+   :header-rows: 1
+
+   * - Directory/File Name
+     - Description
+   * - *raw.anqrpht.fastq.gz*
+     - main output (clean data)
+   * - rRNA.fastq.gz
+     - filtered ribosomal reads
+   * - adaptersDetected.fa
+     - adapters detected and removed
+   * - bhist.txt
+     - base composition histogram by position
+   * - cardinality.txt
+     - estimation of the number of unique kmers
+   * - commonMicrobes.txt
+     - detected common microbes
+   * - file-list.txt
+     - output file list for rqcfilter2.sh
+   * - *filterStats.txt*
+     - *summary statistics*
+   * - *filterStats.json*
+     - *summary statistics in JSON format*
+   * - *filterStats2.txt*
+     - *more detailed summary statistics*
+   * - gchist.txt
+     - GC content histogram
+   * - human.fq.gz
+     - detected human sequence reads
+   * - ihist_merge.txt
+     - insert size histogram
+   * - khist.txt
+     - kmer-frequency histogram
+   * - kmerStats1.txt
+     - synthetic molecule (phix, linker, lamda, pJET) filter run log
+   * - kmerStats2.txt
+     - synthetic molecule (short contamination) filter run log
+   * - ktrim_kmerStats1.txt
+     - detected adapters filter run log
+   * - ktrim_scaffoldStats1.txt
+     - detected adapters filter statistics
+   * - microbes.fq.gz
+     - detected common microbes sequence reads
+   * - microbesUsed.txt
+     - common microbes list for detection
+   * - peaks.txt
+     - number of unique kmers in each peak on the histogram
+   * - phist.txt
+     - polymer length histogram
+   * - refStats.txt
+     - human reads filter statistics
+   * - reproduce.sh
+     - the shell script to reproduce the run
+   * - scaffoldStats1.txt
+     - detected synthetic molecule (phix, linker, lamda, pJET) statistics
+   * - scaffoldStats2.txt
+     - detected synthetic molecule (short contamination) statistics
+   * - scaffoldStatsSpikein.txt
+     - detected spike-in kapa tag statistics
+   * - sketch.txt
+     - mash type sketch scanned result against nt, refseq, silva database sketches
+   * - spikein.fq.gz
+     - detected spike-in kapa tag sequence reads
+   * - status.log
+     - rqcfilter2.sh running log
+   * - synth1.fq.gz
+     - detected synthetic molecule (phix, linker, lamda, pJET) sequence reads
+   * - synth2.fq.gz
+     - detected synthetic molecule (short contamination) sequence reads
 
 
 Version History
 ---------------
 
-- 0.0.7 (release date **08/23/2024**; previous versions: 0.0.6)
+- 0.0.7 (release date *08/23/2024*; previous versions: 0.0.6)
 
 
 Point of contact
