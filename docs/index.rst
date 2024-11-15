@@ -12,33 +12,66 @@ Workflow Overview
 This workflow utilizes the program "rqcfilter2" from BBTools to perform quality control on raw Illumina reads. The workflow performs quality trimming, artifact removal, linker trimming, adapter trimming, and spike-in removal (using BBDuk), and performs human/cat/dog/mouse/microbe removal (using BBMap). It is a replicate of the `QA protocol <https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/data-preprocessing/>`_ implemented at JGI.
 
 The following parameters are used for "rqcfilter2" in this workflow:
-    - barcodefilter=false :  Disable improper barcodes filter
-    - chastityfilter=false:  Remove illumina reads failing chastity filter.
-    - clumpify=true       :  Run clumpify; all deduplication flags require this.
-    - extend=false        : Extend reads during merging to allow insert size estimation of non-overlapping reads.
-    - jni=true             : Enable C code for higher speed and identical results.
-    - usejni=false        : Do alignments in C code, which is faster, if an edit distance is allowed. This will require compiling the C code.
-    - khist=true  :  Generate a kmer-frequency histogram of the output data.
-    - maq=10       :  Reads with average quality (before trimming) below this will be discarded.
-    - maxns=1     :  Reads with more Ns than this will be discarded.
-    - minlen=51   :  Reads shorter than this after trimming will be discarded. Pairs will be discarded only if both are shorter.
-    - mlf=0.33    :  Reads shorter than this fraction of original length after trimming will be discarded.
-    - mtst=true    : Spike-in bbduk removal mtst parameter 
-    - phix=true   :  Remove reads containing phiX kmers.
-    - pigz=true    : Use pigz for compression
-    - qtrim=r     :  Quality-trim from right ends before mapping.
-    - removecat=true      :  Remove cat reads via mapping.
-    - removedog=true      :  Remove dog reads via mapping.
-    - removehuman=true    :  Remove human reads via mapping.
-    - removemicrobes=true :  Remove common contaminant microbial reads via mapping, and place them in a separate file.
-    - removemouse=true    :  Remove mouse reads via mapping.
-    - removeribo=true      : Remove ribosomal reads via kmer-matching, and place them in a separate file.
-    - *rna=true*         : Parameter for RNA-seq analysis. 
-    - sketch=true          : Run SendSketch on 2M read pairs.
-    - trimfragadapter=true:  Trim all known Illumina adapter sequences, including TruSeq and Nextera.
-    - trimq=0     :  Trim quality threshold.
-    - trimpolyg=5 :  Trim reads that start or end with a G polymer at least this long.
-    - unpigz=t     : Use pigz for decompression
+ 
+.. list-table:: 
+   :header-rows: 1
+
+   * - `Parameter`
+     - Description
+   * - `barcodefilter=false`
+     - Disable improper barcodes filter
+   * - `chastityfilter=false`
+     - Remove illumina reads failing chastity filter
+   * - `clumpify=true`
+     - Run clumpify; all deduplication flags require this
+   * - `extend=false`
+     - Extend reads during merging to allow insert size estimation of non-overlapping reads
+   * - `jni=true`
+     - Enable C code for higher speed and identical results
+   * - `usejni=false`
+     - Do alignments in C code, which is faster, if an edit distance is allowed. This will require compiling the C code
+   * - `khist=true`
+     - Generate a kmer-frequency histogram of the output data
+   * - `maq=10`
+     - Reads with average quality (before trimming) below this will be discarded
+   * - `maxns=1`
+     - Reads with more Ns than this will be discarded
+   * - `minlen=51`
+     - Reads shorter than this after trimming will be discarded. Pairs will be discarded only if both are shorter
+   * - `mlf=0.33`
+     - Reads shorter than this fraction of original length after trimming will be discarded
+   * - `mtst=true`
+     - Spike-in bbduk removal mtst parameter
+   * - `phix=true`
+     - Remove reads containing phiX kmers
+   * - `pigz=true`
+     - Use pigz for compression
+   * - `qtrim=r`
+     - Quality-trim from right ends before mapping
+   * - `removecat=true`
+     - Remove cat reads via mapping
+   * - `removedog=true`
+     - Remove dog reads via mapping
+   * - `removehuman=true`
+     - Remove human reads via mapping
+   * - `removemicrobes=true`
+     - Remove common contaminant microbial reads via mapping, and place them in a separate file
+   * - `removemouse=true`
+     - Remove mouse reads via mapping
+   * - `removeribo=true`
+     - Remove ribosomal reads via kmer-matching, and place them in a separate file
+   * - `*rna=true*`
+     - Parameter for RNA-seq analysis
+   * - `sketch=true`
+     - Run SendSketch on 2M read pairs
+   * - `trimfragadapter=true`
+     - Trim all known Illumina adapter sequences, including TruSeq and Nextera
+   * - `trimq=0`
+     - Trim quality threshold
+   * - `trimpolyg=5`
+     - Trim reads that start or end with a G polymer at least this long
+   * - `unpigz=t`
+     - Use pigz for decompression
 
  
 Workflow Availability
@@ -96,12 +129,12 @@ Inputs
 
 A JSON file containing the following information: 
 
-1.	the path to the database directory
-2.	the path to the fastq file(s) ([R1, R2] if not interleaved) 
-3.  input_interleaved (boolean)
-4.  output file prefix
-5.	(optional) parameters for memory 
-6.	(optional) number of threads requested
+#.	the path to the database directory
+#.	the path to the fastq file(s) ([R1, R2] if not interleaved) 
+#.  input_interleaved (boolean)
+#.  output file prefix
+#.	(optional) parameters for memory 
+#.	(optional) number of threads requested
 
 
 An example input JSON file is shown below:
