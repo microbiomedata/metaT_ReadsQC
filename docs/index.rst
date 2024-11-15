@@ -15,6 +15,7 @@ The following parameters are used for "rqcfilter2" in this workflow:
  
 .. list-table:: 
    :header-rows: 1
+   
    * - :code:`Parameter`
      - Description
    * - :code:`barcodefilter=false`
