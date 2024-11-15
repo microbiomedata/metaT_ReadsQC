@@ -15,7 +15,7 @@ The following parameters are used for "rqcfilter2" in this workflow:
  
 .. list-table:: 
    :header-rows: 1
-   
+
    * - :code:`Parameter`
      - Description
    * - :code:`barcodefilter=false`
@@ -60,8 +60,8 @@ The following parameters are used for "rqcfilter2" in this workflow:
      - Remove mouse reads via mapping
    * - :code:`removeribo=true`
      - Remove ribosomal reads via kmer-matching, and place them in a separate file
-   * - :code:`*rna=true*`
-     - Parameter for RNA-seq analysis
+   * - :code:`rna=true`
+     - *Parameter for RNA-seq analysis* (this is main difference between `ReadsQC <https://github.com/microbiomedata/ReadsQC>`_ and MetaT ReadsQC)
    * - :code:`sketch=true`
      - Run SendSketch on 2M read pairs
    * - :code:`trimfragadapter=true`
