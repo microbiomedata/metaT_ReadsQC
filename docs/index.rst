@@ -78,8 +78,10 @@ Workflow Availability
 ---------------------
 
 The workflow from GitHub uses all the listed docker images to run all third-party tools.
-The workflow is available in GitHub: https://github.com/microbiomedata/metaT_ReadsQC; the corresponding
-Docker images are available in DockerHub: https://hub.docker.com/r/microbiomedata/bbtools, https://hub.docker.com/r/microbiomedata/workflowmeta.
+The workflow is available in GitHub: https://github.com/microbiomedata/metaT_ReadsQC; the corresponding Docker images are available in DockerHub: 
+
+- `microbiomedata/bbtools:38.96 <https://hub.docker.com/r/microbiomedata/bbtools>`_
+- `microbiomedata/workflowmeta:1.1.1 <https://hub.docker.com/r/microbiomedata/workflowmeta>`_
 
 Requirements for Execution 
 --------------------------
@@ -118,9 +120,10 @@ The following commands will download the database
     tar -xvf RQCFilterData.tar -C refdata
     rm RQCFilterData.tar	
 
-Sample dataset(s)
------------------
+Sample datasets
+---------------
 - Processed Metatranscriptome of soil microbial communities from the East River watershed near Crested Butte, Colorado, United States - ER_RNA_119 (`SRR11678315 <https://www.ncbi.nlm.nih.gov/sra/SRX8239222>`_) with `metadata available in the NMDC Data Portal <https://data.microbiomedata.org/details/study/nmdc:sty-11-dcqce727>`_. 
+
   - The zipped raw fastq file is available `here <https://portal.nersc.gov/project/m3408//test_data/metaT/SRR11678315.fastq.gz>`_
   - The qc'ed outputs are available `here <https://portal.nersc.gov/cfs/m3408/test_data/metaT/SRR11678315/readsqc_output/>`_
 
