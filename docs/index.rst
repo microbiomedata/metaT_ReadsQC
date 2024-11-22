@@ -1,7 +1,7 @@
-Reads QC Workflow (v1.0.2)
+MetaT Reads QC Workflow (v0.0.7)
 =============================
 
-.. image:: rqc_workflow.png
+.. image:: mt_rqc_workflow2024.svg
    :align: center
    :scale: 50%
 
@@ -9,44 +9,87 @@ Reads QC Workflow (v1.0.2)
 Workflow Overview
 -----------------
 
-This workflow utilizes the program “rqcfilter2” from BBTools to perform quality control on raw Illumina reads. The workflow performs quality trimming, artifact removal, linker trimming, adapter trimming, and spike-in removal (using BBDuk), and performs human/cat/dog/mouse/microbe removal (using BBMap).
+This workflow utilizes the program "rqcfilter2" from BBTools to perform quality control on raw Illumina reads. The workflow performs quality trimming, artifact removal, linker trimming, adapter trimming, and spike-in removal (using BBDuk), and performs human/cat/dog/mouse/microbe removal (using BBMap). It is a replicate of the `QA protocol <https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/data-preprocessing/>`_ implemented at JGI.
 
-The following parameters are used for "rqcfilter2" in this workflow::
- - qtrim=r     :  Quality-trim from right ends before mapping.
- - trimq=0     :  Trim quality threshold.
- - maxns=3     :  Reads with more Ns than this will be discarded.
- - maq=3       :  Reads with average quality (before trimming) below this will be discarded.
- - minlen=51   :  Reads shorter than this after trimming will be discarded.  Pairs will be discarded only if both are shorter.
- - mlf=0.33    :  Reads shorter than this fraction of original length after trimming will be discarded.
- - phix=true   :  Remove reads containing phiX kmers.
- - khist=true  :  Generate a kmer-frequency histogram of the output data.
- - kapa=true   :  Remove and quantify kapa tag
- - trimpolyg=5 :  Trim reads that start or end with a G polymer at least this long
- - clumpify=true       :  Run clumpify; all deduplication flags require this.
- - removehuman=true    :  Remove human reads via mapping.
- - removedog=true      :  Remove dog reads via mapping.
- - removecat=true      :  Remove cat reads via mapping.
- - removemouse=true    :  Remove mouse reads via mapping.
- - barcodefilter=false :  Disable improper barcodes filter
- - chastityfilter=false:  Remove illumina reads failing chastity filter.
- - trimfragadapter=true:  Trim all known Illumina adapter sequences, including TruSeq and Nextera.
- - removemicrobes=true :  Remove common contaminant microbial reads via mapping, and place them in a separate file.
+The following parameters are used for "rqcfilter2" in this workflow:
+ 
+.. list-table:: 
+   :header-rows: 1
+
+   * - :code:`Parameter`
+     - Description
+   * - :code:`barcodefilter=false`
+     - Disable improper barcodes filter
+   * - :code:`chastityfilter=false`
+     - Remove illumina reads failing chastity filter
+   * - :code:`clumpify=true`
+     - Run clumpify; all deduplication flags require this
+   * - :code:`extend=false`
+     - Extend reads during merging to allow insert size estimation of non-overlapping reads
+   * - :code:`jni=true`
+     - Enable C code for higher speed and identical results
+   * - :code:`usejni=false`
+     - Do alignments in C code, which is faster, if an edit distance is allowed. This will require compiling the C code
+   * - :code:`khist=true`
+     - Generate a kmer-frequency histogram of the output data
+   * - :code:`maq=10`
+     - Reads with average quality (before trimming) below this will be discarded
+   * - :code:`maxns=1`
+     - Reads with more Ns than this will be discarded
+   * - :code:`minlen=51`
+     - Reads shorter than this after trimming will be discarded. Pairs will be discarded only if both are shorter
+   * - :code:`mlf=0.33`
+     - Reads shorter than this fraction of original length after trimming will be discarded
+   * - :code:`mtst=true`
+     - Spike-in bbduk removal mtst parameter
+   * - :code:`phix=true`
+     - Remove reads containing phiX kmers
+   * - :code:`pigz=true`
+     - Use pigz for compression
+   * - :code:`qtrim=r`
+     - Quality-trim from right ends before mapping
+   * - :code:`removecat=true`
+     - Remove cat reads via mapping
+   * - :code:`removedog=true`
+     - Remove dog reads via mapping
+   * - :code:`removehuman=true`
+     - Remove human reads via mapping
+   * - :code:`removemicrobes=true`
+     - Remove common contaminant microbial reads via mapping, and place them in a separate file
+   * - :code:`removemouse=true`
+     - Remove mouse reads via mapping
+   * - :code:`removeribo=true`
+     - Remove ribosomal reads via kmer-matching, and place them in a separate file
+   * - :code:`rna=true`
+     - *Parameter for RNA-seq analysis* (this is main difference between `ReadsQC <https://github.com/microbiomedata/ReadsQC>`_ and MetaT ReadsQC)
+   * - :code:`sketch=true`
+     - Run SendSketch on 2M read pairs
+   * - :code:`trimfragadapter=true`
+     - Trim all known Illumina adapter sequences, including TruSeq and Nextera
+   * - :code:`trimq=0`
+     - Trim quality threshold
+   * - :code:`trimpolyg=5`
+     - Trim reads that start or end with a G polymer at least this long
+   * - :code:`unpigz=t`
+     - Use pigz for decompression
 
  
 Workflow Availability
 ---------------------
 
 The workflow from GitHub uses all the listed docker images to run all third-party tools.
-The workflow is available in GitHub: https://github.com/microbiomedata/ReadsQC; the corresponding
-Docker image is available in DockerHub: https://hub.docker.com/r/microbiomedata/bbtools.
+The workflow is available in GitHub: https://github.com/microbiomedata/metaT_ReadsQC; the corresponding Docker images are available in DockerHub: 
+
+- `microbiomedata/bbtools:38.96 <https://hub.docker.com/r/microbiomedata/bbtools>`_
+- `microbiomedata/workflowmeta:1.1.1 <https://hub.docker.com/r/microbiomedata/workflowmeta>`_
 
 Requirements for Execution 
 --------------------------
 
-(recommendations are in **bold**) 
+(recommendations are in *italics*) 
 
-- WDL-capable Workflow Execution Tool (**Cromwell**)
-- Container Runtime that can load Docker images (**Docker v2.1.0.3 or higher**) 
+- WDL-capable Workflow Execution Tool (*Cromwell*)
+- Container Runtime that can load Docker images (*Docker v2.1.0.3 or higher*) 
 
 Hardware Requirements
 ---------------------
@@ -63,49 +106,38 @@ Third party software (This is included in the Docker image.)
 
 - `BBTools v38.96 <https://jgi.doe.gov/data-and-tools/bbtools/>`_ (License: `BSD-3-Clause-LBNL <https://bitbucket.org/berkeleylab/jgi-bbtools/src/master/license.txt>`_)
 
+
 Requisite database
 ~~~~~~~~~~~~~~~~~~
 
 The RQCFilterData Database must be downloaded and installed. This is a 106 GB tar file which includes reference datasets of artifacts, adapters, contaminants, the phiX genome, and some host genomes.  
 
-The following commands will download the database:: 
+The following commands will download the database 
 
+.. code-block::bash
     mkdir refdata
     wget http://portal.nersc.gov/dna/microbial/assembly/bushnell/RQCFilterData.tar
     tar -xvf RQCFilterData.tar -C refdata
     rm RQCFilterData.tar	
 
-Sample dataset(s)
------------------
+Sample datasets
+---------------
+- Processed Metatranscriptome of soil microbial communities from the East River watershed near Crested Butte, Colorado, United States - ER_RNA_119 (`SRR11678315 <https://www.ncbi.nlm.nih.gov/sra/SRX8239222>`_) with `metadata available in the NMDC Data Portal <https://data.microbiomedata.org/details/study/nmdc:sty-11-dcqce727>`_. 
 
-- small dataset: `Ecoli 10x <https://portal.nersc.gov/cfs/m3408/test_data/ReadsQC_small_test_data.tgz>`_ . You can find input/output in the downloaded tar gz file.
-
-- large dataset: Zymobiomics mock-community DNA control (`SRR7877884 <https://www.ebi.ac.uk/ena/browser/view/SRR7877884>`_); the `original gzipped dataset <https://portal.nersc.gov/cfs/m3408/test_data/ReadsQC_large_test_data.tgz>`_ is ~5.7 GB.  You can find input/output in the downloaded tar gz file.
-
-
-.. note::
-
-    If the input data is paired-end data, it must be in interleaved format. The following command will interleave the files, using the above dataset as an example:
-    
-.. code-block:: bash    
-
-    paste <(zcat SRR7877884_1.fastq.gz | paste - - - -) <(zcat SRR7877884_2.fastq.gz | paste - - - -) | tr '\t' '\n' | gzip -c > SRR7877884-int.fastq.gz
-    
-For testing purposes and for the following examples, we used a 10% sub-sampling of the above dataset: `SRR7877884-int-0.1.fastq.gz <https://portal.nersc.gov/cfs/m3408/test_data/SRR7877884-int-0.1.fastq.gz>`_. This dataset is already interleaved.
+  - The zipped raw fastq file is available `here <https://portal.nersc.gov/project/m3408//test_data/metaT/SRR11678315.fastq.gz>`_
+  - The qc'ed outputs are available `here <https://portal.nersc.gov/cfs/m3408/test_data/metaT/SRR11678315/readsqc_output/>`_
 
 Inputs
 ------
 
 A JSON file containing the following information: 
 
-1.	the path to the database
-2.	the path to the interleaved fastq file (input data) 
-3.	the path to the output directory
-4.      input_interleaved (boolean)
-5.      forwards reads fastq file (when input_interleaved is false) 
-6.      reverse reads fastq file (when input_interleaved is false)     
-7.	(optional) parameters for memory 
-8.	(optional) number of threads requested
+#.	the path to the database directory
+#.	the path to the fastq file(s) ([R1, R2] if not interleaved) 
+#.  input_interleaved (boolean)
+#.  output file prefix
+#.	(optional) parameters for memory 
+#.	(optional) number of threads requested
 
 
 An example input JSON file is shown below:
@@ -113,93 +145,118 @@ An example input JSON file is shown below:
 .. code-block:: JSON
 
     {
-        "jgi_rqcfilter.database": "/path/to/refdata",
-        "jgi_rqcfilter.input_files": [
-            "/path/to/SRR7877884-int-0.1.fastq.gz "
-        ],
-        "jgi_rqcfilter.input_interleaved": true,
-        "jgi_rqcfilter.input_fq1":[],
-        "jgi_rqcfilter.input_fq2":[],
-        "jgi_rqcfilter.outdir": "/path/to/rqcfiltered",
-        "jgi_rqcfilter.memory": "35G",
-        "jgi_rqcfilter.threads": "16"
+        "metaTReadsQC.input_files": ["https://portal.nersc.gov/project/m3408//test_data/metaT/SRR11678315.fastq.gz"],
+        "metaTReadsQC.proj":"SRR11678315-int-0.1",
+        "metaTReadsQC.rqc_mem": 180,
+        "metaTReadsQC.rqc_thr": 64,
+        "metaTReadsQC.database": "/refdata/"
+
     }
-
-.. note::
-
-    In an HPC environment, parallel processing allows for processing multiple samples. The "jgi_rqcfilter.input_files" parameter is an array data structure. It can be used for multiple samples as input separated by a comma (,).
-    Ex: "jgi_rqcfilter.input_files":[“first-int.fastq”,”second-int.fastq”]
 
 
 Output
 ------
 
-A directory named with the prefix of the FASTQ input file will be created and multiple output files are generated; the main QC FASTQ output is named prefix.anqdpht.fastq.gz. Using the dataset above as an example, the main output would be named SRR7877884-int-0.1.anqdpht.fastq.gz. Other files include statistics on the quality of the data; what was trimmed, detected, and filtered in the data; a status log, and a shell script documenting the steps implemented so the workflow can be reproduced.
+In the workflow execution directories, there will be a folder called :code:`filtered` containing all the below listed output files. The bolded outputs below will be copied over to the primary output folder for the full workflow, these are what are shown through the NMDC-EDGE website. The :code:`rqcfilter2.sh` output is named :code:`raw.anqdpht.fastq.gz`. Using the dataset above as an example, the main output would be renamed :code:`SRR11678315-int-0.1.filtered.fastq.gz`. Other files include statistics on the quality of the data; what was trimmed, detected, and filtered in the data; a status log, and a shell script documenting the steps implemented so the workflow can be reproduced.
 
 An example output JSON file (filterStats.json) is shown below:
    
 .. code-block:: JSON 
     
-	{
-	  "inputReads": 331126,
-	  "kfilteredBases": 138732,
-	  "qfilteredReads": 0,
-	  "ktrimmedReads": 478,
-	  "outputBases": 1680724,
-	  "ktrimmedBases": 25248,
-	  "kfilteredReads": 926,
-	  "qtrimmedBases": 0,
-	  "outputReads": 11212,
-	  "gcPolymerRatio": 0.182857,
-	  "inputBases": 50000026,
-	  "qtrimmedReads": 0,
-	  "qfilteredBases": 0
-	}
+    {
+        "inputReads": 16809276, 
+        "kfilteredBases": 4500, 
+        "qfilteredReads": 3978, 
+        "ktrimmedReads": 467761, 
+        "outputBases": 1473400259, 
+        "ktrimmedBases": 60463632, 
+        "kfilteredReads": 15, 
+        "qtrimmedBases": 2345, 
+        "outputReads": 4974016, 
+        "gcPolymerRatio": 112.898477, 
+        "inputBases": 5076401352, 
+        "qtrimmedReads": 292, 
+        "qfilteredBases": 1185765
+    }
 
 
-Below is an example of all the output directory files with descriptions to the right.
+Below is an example of all the :code:`filtered` output directory files from :code:`rqcfilter2.sh` with descriptions to the right. The *italicized* files are selected for output through NMDC-EDGE. 
 
-==================================== ============================================================================
-FileName                              Description
-==================================== ============================================================================
-SRR7877884-int-0.1.anqdpht.fastq.gz   main output (clean data)       
-adaptersDetected.fa                   adapters detected and removed        
-bhist.txt                             base composition histogram by position 
-cardinality.txt                       estimation of the number of unique kmers 
-commonMicrobes.txt                    detected common microbes 
-file-list.txt                         output file list for rqcfilter2.sh 
-filterStats.txt                       summary statistics 
-filterStats.json                      summary statistics in JSON format 
-filterStats2.txt                      more detailed summary statistics 
-gchist.txt                            GC content histogram 
-human.fq.gz                           detected human sequence reads 
-ihist_merge.txt                       insert size histogram 
-khist.txt                             kmer-frequency histogram 
-kmerStats1.txt                        synthetic molecule (phix, linker, lamda, pJET) filter run log  
-kmerStats2.txt                        synthetic molecule (short contamination) filter run log 
-ktrim_kmerStats1.txt                  detected adapters filter run log 
-ktrim_scaffoldStats1.txt              detected adapters filter statistics 
-microbes.fq.gz                        detected common microbes sequence reads 
-microbesUsed.txt                      common microbes list for detection 
-peaks.txt                             number of unique kmers in each peak on the histogram 
-phist.txt                             polymer length histogram 
-refStats.txt                          human reads filter statistics 
-reproduce.sh                          the shell script to reproduce the run
-scaffoldStats1.txt                    detected synthetic molecule (phix, linker, lamda, pJET) statistics 
-scaffoldStats2.txt                    detected synthetic molecule (short contamination) statistics 
-scaffoldStatsSpikein.txt              detected skipe-in kapa tag statistics 
-sketch.txt                            mash type sketch scanned result against nt, refseq, silva database sketches.  
-spikein.fq.gz                         detected skipe-in kapa tag sequence reads 
-status.log                            rqcfilter2.sh running log 
-synth1.fq.gz                          detected synthetic molecule (phix, linker, lamda, pJET) sequence reads 
-synth2.fq.gz                          detected synthetic molecule (short contamination) sequence reads 
-==================================== ============================================================================
+.. list-table:: 
+   :header-rows: 1
+
+   * - Directory/File Name
+     - Description
+   * - *raw.anqrpht.fastq.gz*
+     - main output (clean data)
+   * - rRNA.fastq.gz
+     - filtered ribosomal reads
+   * - adaptersDetected.fa
+     - adapters detected and removed
+   * - bhist.txt
+     - base composition histogram by position
+   * - cardinality.txt
+     - estimation of the number of unique kmers
+   * - commonMicrobes.txt
+     - detected common microbes
+   * - file-list.txt
+     - output file list for rqcfilter2.sh
+   * - *filterStats.txt*
+     - *summary statistics*
+   * - *filterStats.json*
+     - *summary statistics in JSON format*
+   * - *filterStats2.txt*
+     - *more detailed summary statistics*
+   * - gchist.txt
+     - GC content histogram
+   * - human.fq.gz
+     - detected human sequence reads
+   * - ihist_merge.txt
+     - insert size histogram
+   * - khist.txt
+     - kmer-frequency histogram
+   * - kmerStats1.txt
+     - synthetic molecule (phix, linker, lamda, pJET) filter run log
+   * - kmerStats2.txt
+     - synthetic molecule (short contamination) filter run log
+   * - ktrim_kmerStats1.txt
+     - detected adapters filter run log
+   * - ktrim_scaffoldStats1.txt
+     - detected adapters filter statistics
+   * - microbes.fq.gz
+     - detected common microbes sequence reads
+   * - microbesUsed.txt
+     - common microbes list for detection
+   * - peaks.txt
+     - number of unique kmers in each peak on the histogram
+   * - phist.txt
+     - polymer length histogram
+   * - refStats.txt
+     - human reads filter statistics
+   * - reproduce.sh
+     - the shell script to reproduce the run
+   * - scaffoldStats1.txt
+     - detected synthetic molecule (phix, linker, lamda, pJET) statistics
+   * - scaffoldStats2.txt
+     - detected synthetic molecule (short contamination) statistics
+   * - scaffoldStatsSpikein.txt
+     - detected spike-in kapa tag statistics
+   * - sketch.txt
+     - mash type sketch scanned result against nt, refseq, silva database sketches
+   * - spikein.fq.gz
+     - detected spike-in kapa tag sequence reads
+   * - status.log
+     - rqcfilter2.sh running log
+   * - synth1.fq.gz
+     - detected synthetic molecule (phix, linker, lamda, pJET) sequence reads
+   * - synth2.fq.gz
+     - detected synthetic molecule (short contamination) sequence reads
 
 
 Version History
 ---------------
 
-- 1.0.2 (release date **04/09/2021**; previous versions: 1.0.1)
+- 0.0.7 (release date *08/23/2024*; previous versions: 0.0.6)
 
 
 Point of contact
@@ -207,5 +264,4 @@ Point of contact
 
 - Original author: Brian Bushnell <bbushnell@lbl.gov>
 
-- Package maintainer: Chienchi Lo <chienchi@lanl.gov>
-
+- Package maintainers: Chienchi Lo <chienchi@lanl.gov>

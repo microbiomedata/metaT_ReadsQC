@@ -31,13 +31,20 @@ Description of the files:
 
 ## Input files
 
-1. fastq (illumina paired-end interleaved fastq), 
-3. project name 
+1.	the path to the database directory
+2.	the path to the fastq file(s) ([R1, R2] if not interleaved) 
+3.  input_interleaved (boolean)
+4.  output file prefix
+5.	(optional) parameters for memory 
+6.	(optional) number of threads requested
 
 ```
 {
-     "metaTReadsQC.input_files": ["/global/cfs/cdirs/m3408/ficus/example/12889.1.295318.GTGCTTAC-GTAAGCAC.fastq.gz"],
-    "metaTReadsQC.proj":"nmdc:xxxxxxx"
+    "metaTReadsQC.input_files": ["https://portal.nersc.gov/project/m3408//test_data/metaT/SRR11678315.fastq.gz"],
+	"metaTReadsQC.proj":"SRR11678315-int-0.1",
+	"metaTReadsQC.rqc_mem": 180,
+	"metaTReadsQC.rqc_thr": 64,
+	"metaTReadsQC.database": "/refdata/"
 }
 ```
 
