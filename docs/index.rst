@@ -3,7 +3,6 @@ MetaT Reads QC Workflow (v0.0.7)
 
 .. image:: mt_rqc_workflow2024.svg
    :align: center
-   :scale: 50%
 
 
 Workflow Overview
