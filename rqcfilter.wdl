@@ -7,7 +7,7 @@ workflow metaTReadsQC {
         String  database="/refdata/"
         String  proj
         Int     rqc_mem = 180
-        Int     rqc_thr = 64
+        Int     rqc_thr = 16
         Int     interleave_mem = 10
         Boolean gcloud_env=false
         String  prefix=sub(proj, ":", "_")
