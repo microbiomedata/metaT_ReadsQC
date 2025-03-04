@@ -11,7 +11,7 @@ workflow nmdc_rqcfilter {
     String  input_fastq2
     String  database="/refdata/"
     String  rqc_mem = "115G"
-    Int     rqc_thr = 64
+    Int     rqc_thr = 16
     String  interleave_mem = "10G"
     Boolean gcloud_env=false
     }
@@ -196,7 +196,7 @@ task rqcfilter{
      runtime {
         docker: container
         memory: "140 GiB"
-        cpu:  32
+        cpu:  16
     }
 }
 
