@@ -3,7 +3,7 @@ version 1.0
 
 workflow metaTReadsQC {
     input{
-        Array[File?] input_files
+        Array[String] input_files
         String  database="/refdata/"
         String  proj
         Int     rqc_mem = 180
@@ -73,7 +73,7 @@ task stage_single {
     input{
         String container
         String target="raw.fastq.gz"
-        File? input_file
+        String? input_file
     }
    command <<<
 
@@ -108,8 +108,8 @@ task stage_interleave {
     String target_reads_1="raw_reads_1.fastq.gz"
     String target_reads_2="raw_reads_2.fastq.gz"
     String output_interleaved="raw_interleaved.fastq.gz"
-    File? input_fastq1
-    File? input_fastq2
+    String? input_fastq1
+    String? input_fastq2
    }
 
    command <<<
