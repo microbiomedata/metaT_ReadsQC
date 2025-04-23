@@ -166,7 +166,7 @@ task rqcfilter{
             trimpolyg=5 \
             trimq=0 \
             unpigz=t \
-            ~{if (defined(memory)) then "-Xmx" + xmxmem + "G" else "-Xmx101077m" } \
+            ~{if (defined(memory)) then "-Xmx" + xmxmem + "G" else "-Xmx60G" } \
             ~{if (defined(threads)) then "threads=" + threads else "threads=auto" } \
             in=~{input_fastq} \
             > >(tee -a  ~{filename_outlog}) \
