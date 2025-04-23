@@ -112,23 +112,23 @@ task stage_interleave {
     String? input_fastq2
    }
 
-   command <<<
-       set -oeu pipefail
-       if [ $( echo ~{input_fastq1} | egrep -c "https*:") -gt 0 ] ; then
-        wget ~{input_fastq1} -O ~{target_reads_1}
-        wget ~{input_fastq2} -O ~{target_reads_2}
-       else
-        set +o pipefail
-        ln ~{input_fastq1} ~{target_reads_1} || ln -s ~{input_fastq1} ~{target_reads_1}
-        ln ~{input_fastq2} ~{target_reads_2} || ln -s ~{input_fastq2} ~{target_reads_2}
-       fi
+    command <<<
+        set -oeu pipefail
+        if [ $( echo ~{input_fastq1} | egrep -c "https*:") -gt 0 ] ; then
+            wget ~{input_fastq1} -O ~{target_reads_1}
+            wget ~{input_fastq2} -O ~{target_reads_2}
+        else
+            set +o pipefail
+            ln ~{input_fastq1} ~{target_reads_1} || ln -s ~{input_fastq1} ~{target_reads_1}
+            ln ~{input_fastq2} ~{target_reads_2} || ln -s ~{input_fastq2} ~{target_reads_2}
+        fi
 
-       reformat.sh -Xmx~{memory}G in1=~{target_reads_1} in2=~{target_reads_2} out=~{output_interleaved}
-       # Capture the start time
-       date --iso-8601=seconds > start.txt
+        reformat.sh -Xmx~{memory}G in1=~{target_reads_1} in2=~{target_reads_2} out=~{output_interleaved}
+        # Capture the start time
+        date --iso-8601=seconds > start.txt
 
-       # Validate that the read1 and read2 files are sorted correct to interleave
-       reformat.sh -Xmx~{memory}G verifypaired=t in=~{output_interleaved}
+        # Validate that the read1 and read2 files are sorted correct to interleave
+        reformat.sh -Xmx~{memory}G verifypaired=t in=~{output_interleaved}
 
    >>>
 
@@ -137,10 +137,10 @@ task stage_interleave {
       String start = read_string("start.txt")
    }
    runtime {
-     memory: "~{memory} GiB"
-     cpu:  2
-     maxRetries: 1
-     docker: container
+        memory: "~{memory} GiB"
+        cpu:  2
+        maxRetries: 1
+        docker: container
    }
 }
 
@@ -165,7 +165,7 @@ task rqcfilter{
         String filename_ribo = "filtered/rRNA.fastq.gz"
     }
 
-     command<<<
+    command<<<
         export TIME="time result\ncmd:%C\nreal %es\nuser %Us \nsys  %Ss \nmemory:%MKB \ncpu %P"
         set -eou pipefail
         if ~{gcloud_env}; then

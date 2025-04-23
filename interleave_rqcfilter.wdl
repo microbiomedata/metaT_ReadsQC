@@ -1,19 +1,18 @@
 # Interleaved fastq QC workflow
 version 1.0
-workflow nmdc_rqcfilter {
+workflow metaTReadsQC {
     input{
-    String  container="bfoster1/img-omics:0.1.9"
-    String  bbtools_container="microbiomedata/bbtools:38.96"
-    String  workflow_container="microbiomedata/workflowmeta:1.1.1"
     String  proj
     String  prefix=sub(proj, ":", "_")
     String  input_fastq1
     String  input_fastq2
     String  database="/refdata/"
-    String  rqc_mem = "115G"
+    Int     rqc_mem = 180
     Int     rqc_thr = 16
-    String  interleave_mem = "10G"
+    Int     interleave_mem = 10
     Boolean gcloud_env=false
+    String  bbtools_container="microbiomedata/bbtools@sha256:df16e8343661effe8060478d14a9b4620cf484efba0d4818a467276d4bb07a6d"
+    String  workflow_container = "microbiomedata/workflowmeta:1.1.1"
     }
 
     call stage {
@@ -43,12 +42,15 @@ workflow nmdc_rqcfilter {
             prefix = prefix,
             filtered = qc.filtered,
             filtered_stats = qc.stat,
-            filtered_stats2 = qc.stat2
+            filtered_stats2 = qc.stat2,
+            filtered_ribo = qc.filtered_ribo
+
     }
     output {
         File filtered_final = finish_rqc.filtered_final
         File filtered_stats_final = finish_rqc.filtered_stats_final
         File filtered_stats2_final = finish_rqc.filtered_stats2_final
+        File filtered_ribo_final = finish_rqc.filtered_ribo_final
         File rqc_info = make_info_file.rqc_info
     }
 }
@@ -66,22 +68,23 @@ task stage {
     String input_fastq2
    }
 
-   command <<<
-       set -oeu pipefail
-       if [ $( echo ~{input_fastq1} | egrep -c "https*:") -gt 0 ] ; then
-           wget ~{input_fastq1} -O ~{target_reads_1}
-           wget ~{input_fastq2} -O ~{target_reads_2}
-       else
-           ln ~{input_fastq1} ~{target_reads_1} || ln -s ~{input_fastq1} ~{target_reads_1}
-           ln ~{input_fastq2} ~{target_reads_2} || ln -s ~{input_fastq2} ~{target_reads_2}
-       fi
+    command <<<
+        set -oeu pipefail
+        if [ $( echo ~{input_fastq1} | egrep -c "https*:") -gt 0 ] ; then
+            wget ~{input_fastq1} -O ~{target_reads_1}
+            wget ~{input_fastq2} -O ~{target_reads_2}
+        else
+            set +o pipefail
+            ln ~{input_fastq1} ~{target_reads_1} || ln -s ~{input_fastq1} ~{target_reads_1}
+            ln ~{input_fastq2} ~{target_reads_2} || ln -s ~{input_fastq2} ~{target_reads_2}
+        fi
 
-       reformat.sh -Xmx~{memory} in1=~{target_reads_1} in2=~{target_reads_2} out=~{output_interleaved}
-       # Capture the start time
-       date --iso-8601=seconds > start.txt
+        reformat.sh -Xmx~{memory}G in1=~{target_reads_1} in2=~{target_reads_2} out=~{output_interleaved}
+        # Capture the start time
+        date --iso-8601=seconds > start.txt
 
-       # Validate that the read1 and read2 files are sorted correct to interleave
-       reformat.sh -Xmx~{memory} verifypaired=t in=~{output_interleaved}
+        # Validate that the read1 and read2 files are sorted correct to interleave
+        reformat.sh -Xmx~{memory} verifypaired=t in=~{output_interleaved}
 
    >>>
 
@@ -89,11 +92,11 @@ task stage {
       File interleaved_reads = "~{output_interleaved}"
       String start = read_string("start.txt")
    }
-   runtime {
-     memory: "1 GiB"
-     cpu:  2
-     maxRetries: 1
-     docker: container
+    runtime {
+        memory: "~{memory} GiB"
+        cpu:  2
+        maxRetries: 1
+        docker: container
    }
 }
 
@@ -106,18 +109,19 @@ task rqcfilter{
         String rqcfilterdata = database + "/RQCFilterData"
         Boolean gcloud_env=false
         String gcloud_db_path = "/cromwell_root/workflows_refdata/refdata/RQCFilterData"
-        Array[File]? gcloud_db= if (gcloud_env) then [database] else []
-        String? memory
-        Int? threads
+        Int memory
+        Int xmxmem = floor(memory * 0.85)
+        Int threads
         String filename_outlog="stdout.log"
         String filename_errlog="stderr.log"
         String filename_stat="filtered/filterStats.txt"
         String filename_stat2="filtered/filterStats2.txt"
         String filename_stat_json="filtered/filterStats.json"
         String filename_reproduce="filtered/reproduce.sh"
+        String filename_ribo = "filtered/rRNA.fastq.gz"
     }
 
-     command<<<
+    command<<<
         export TIME="time result\ncmd:%C\nreal %es\nuser %Us \nsys  %Ss \nmemory:%MKB \ncpu %P"
         set -eou pipefail
         if ~{gcloud_env}; then
@@ -143,7 +147,7 @@ task rqcfilter{
             minlen=51 \
             mlf=0.33 \
             mtst=t \
-            outribo=ribo.fq.gz \
+            outribo=rRNA.fastq.gz \
             path=filtered \
             phix=t \
             pigz=t \
@@ -162,7 +166,7 @@ task rqcfilter{
             trimpolyg=5 \
             trimq=0 \
             unpigz=t \
-            ~{if (defined(memory)) then "-Xmx" + memory else "-Xmx101077m" } \
+            ~{if (defined(memory)) then "-Xmx" + xmxmem + "G" else "-Xmx101077m" } \
             ~{if (defined(threads)) then "threads=" + threads else "threads=auto" } \
             in=~{input_fastq} \
             > >(tee -a  ~{filename_outlog}) \
@@ -191,12 +195,14 @@ task rqcfilter{
             File stat2 = filename_stat2
             File info_file = filename_reproduce
             File filtered = "filtered/raw.anqrpht.fastq.gz"
+            File filtered_ribo = filename_ribo
             File json_out = filename_stat_json
      }
      runtime {
         docker: container
-        memory: "140 GiB"
-        cpu:  16
+        memory: "~{memory} GiB"
+        maxRetries: 1
+        cpu:  threads
     }
 }
 
@@ -233,6 +239,7 @@ task finish_rqc {
         File   filtered_stats
         File   filtered_stats2
         File   filtered
+        File   filtered_ribo
         String container
         String prefix
     }
@@ -245,6 +252,7 @@ task finish_rqc {
         ln ~{filtered} ~{prefix}_filtered.fastq.gz || ln -s ~{filtered} ~{prefix}_filtered.fastq.gz
         ln ~{filtered_stats} ~{prefix}_filterStats.txt || ln -s ~{filtered_stats} ~{prefix}_filterStats.txt
         ln ~{filtered_stats2} ~{prefix}_filterStats2.txt || ln -s ~{filtered_stats2} ~{prefix}_filterStats2.txt
+        ln ~{filtered_ribo} ~{prefix}_rRNA.fastq.gz || ln -s ~{filtered_ribo} ~{prefix}_rRNA.fastq.gz
 
        # Generate stats but rename some fields untilt the script is fixed.
        /scripts/rqcstats.py ~{filtered_stats} > stats.json
@@ -255,6 +263,7 @@ task finish_rqc {
         File filtered_final = "~{prefix}_filtered.fastq.gz"
         File filtered_stats_final = "~{prefix}_filterStats.txt"
         File filtered_stats2_final = "~{prefix}_filterStats2.txt"
+        File filtered_ribo_final = "~{prefix}_rRNA.fastq.gz"
     }
 
     runtime {
