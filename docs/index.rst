@@ -271,4 +271,4 @@ Point of contact
 
 - Original author: Brian Bushnell <bbushnell@lbl.gov>
 
-- Package maintainers: Chienchi Lo <chienchi@lanl.gov>
+- Package maintainers: Samantha Obermiller samantha.obermiller@pnnl.gov
