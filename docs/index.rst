@@ -164,7 +164,7 @@ An example input JSON file is shown below:
 Output
 ------
 
-In the workflow execution directories, there will be a folder called :code:`filtered` containing all the below listed output files. The bolded outputs below will be copied over to the primary output folder for the full workflow, these are what are shown through the NMDC-EDGE website. The :code:`rqcfilter2.sh` output is named :code:`raw.anqdpht.fastq.gz`. Using the dataset above as an example, the main output would be renamed :code:`SRR11678315-int-0.1.filtered.fastq.gz`. Other files include statistics on the quality of the data; what was trimmed, detected, and filtered in the data; a status log, and a shell script documenting the steps implemented so the workflow can be reproduced.
+In the workflow execution directories, there will be a folder called :code:`filtered` containing all the below listed output files. The bolded outputs below will be copied over to the primary output folder for the full workflow. The :code:`rqcfilter2.sh` output is named :code:`raw.anqdpht.fastq.gz`. Using the dataset above as an example, the main output would be renamed :code:`SRR11678315-int-0.1.filtered.fastq.gz`. Other files include statistics on the quality of the data; what was trimmed, detected, and filtered in the data; a status log, and a shell script documenting the steps implemented so the workflow can be reproduced.
 
 An example output JSON file (filterStats.json) is shown below:
    
@@ -271,4 +271,4 @@ Point of contact
 
 - Original author: Brian Bushnell <bbushnell@lbl.gov>
 
-- Package maintainers: Chienchi Lo <chienchi@lanl.gov>
+- Package maintainers: Samantha Obermiller samantha.obermiller@pnnl.gov
