@@ -206,6 +206,12 @@ Below is an example of all the :code:`filtered` output directory files from :cod
      - detected common microbes
    * - file-list.txt
      - output file list for rqcfilter2.sh
+   * - filterStats.txt
+     - summary statistics
+   * - filterStats.json
+     - summary statistics in JSON format
+   * - filterStats2.txt
+     - more detailed summary statistics
    * - gchist.txt
      - GC content histogram
    * - human.fq.gz
