@@ -194,6 +194,8 @@ Below is an example of all the :code:`filtered` output directory files from :cod
 
    * - Directory/File Name
      - Description
+   * - raw.anqrpht.fastq.gz
+     - main output (clean data)
    * - rRNA.fastq.gz
      - filtered ribosomal reads
    * - adaptersDetected.fa
