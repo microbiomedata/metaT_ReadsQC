@@ -187,15 +187,13 @@ An example output JSON file (filterStats.json) is shown below:
     }
 
 
-Below is an example of all the :code:`filtered` output directory files from :code:`rqcfilter2.sh` with descriptions to the right. The *italicized* files are selected for output through NMDC-EDGE. 
+Below is an example of all the :code:`filtered` output directory files from :code:`rqcfilter2.sh` with descriptions to the right. 
 
 .. list-table:: 
    :header-rows: 1
 
    * - Directory/File Name
      - Description
-   * - *raw.anqrpht.fastq.gz*
-     - main output (clean data)
    * - rRNA.fastq.gz
      - filtered ribosomal reads
    * - adaptersDetected.fa
@@ -208,12 +206,6 @@ Below is an example of all the :code:`filtered` output directory files from :cod
      - detected common microbes
    * - file-list.txt
      - output file list for rqcfilter2.sh
-   * - *filterStats.txt*
-     - *summary statistics*
-   * - *filterStats.json*
-     - *summary statistics in JSON format*
-   * - *filterStats2.txt*
-     - *more detailed summary statistics*
    * - gchist.txt
      - GC content histogram
    * - human.fq.gz
