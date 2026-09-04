@@ -16,7 +16,7 @@ MetaT Reads QC Workflow (v0.0.7)
 Workflow Overview
 -----------------
 
-This workflow utilizes the program "rqcfilter2" from BBTools to perform quality control on raw Illumina reads. The workflow performs quality trimming, artifact removal, linker trimming, adapter trimming, and spike-in removal (using BBDuk), and performs human/cat/dog/mouse/microbe removal (using BBMap). It is a replicate of the `QA protocol <https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/data-preprocessing/>`_ implemented at JGI.
+This workflow utilizes the program "rqcfilter2" from BBTools to perform quality control on raw Illumina reads. The workflow performs quality trimming, artifact removal, linker trimming, adapter trimming, and spike-in removal (using BBDuk), and performs human/cat/dog/mouse/microbe removal (using BBMap). It is a replicate of the QA protocol implemented at JGI.
 
 The following parameters are used for "rqcfilter2" in this workflow:
  
